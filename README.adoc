@@ -1,0 +1,9 @@
+= VirtualTourist
+
+== License
+
+See link:LICENSE[LICENSE]
+
+== Credits
+
+- Icons made by https://www.flaticon.com/authors/catkuro[catkuro] from https://www.flaticon.com/[Flaticon]
