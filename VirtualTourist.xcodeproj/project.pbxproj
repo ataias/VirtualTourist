@@ -17,6 +17,7 @@
 		42F15D5925D9226100E84B07 /* OAuthSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 42F15D5825D9226100E84B07 /* OAuthSwift */; };
 		42F15D6425D930CF00E84B07 /* Secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = 42F15D6325D930CF00E84B07 /* Secrets.json */; };
 		42F15D6C25D949DF00E84B07 /* FileManager+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F15D6B25D949DF00E84B07 /* FileManager+Extensions.swift */; };
+		42F15D7325D9557900E84B07 /* TravelLocationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F15D7225D9557900E84B07 /* TravelLocationsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		42F15D6325D930CF00E84B07 /* Secrets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Secrets.json; sourceTree = "<group>"; };
 		42F15D6625D932BE00E84B07 /* Secrets.json.example */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secrets.json.example; sourceTree = "<group>"; };
 		42F15D6B25D949DF00E84B07 /* FileManager+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Extensions.swift"; sourceTree = "<group>"; };
+		42F15D7225D9557900E84B07 /* TravelLocationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravelLocationsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +72,7 @@
 				4275121625D7E87A00C796B2 /* Utilities */,
 				427511FE25D7E2A700C796B2 /* VirtualTouristApp.swift */,
 				4275120E25D7E79300C796B2 /* AuthenticationView.swift */,
+				42F15D7225D9557900E84B07 /* TravelLocationsView.swift */,
 				4275120225D7E2A800C796B2 /* Assets.xcassets */,
 				4275120725D7E2A800C796B2 /* Info.plist */,
 				4275120425D7E2A800C796B2 /* Preview Content */,
@@ -193,6 +196,7 @@
 				4275121825D7E88400C796B2 /* View+Extensions.swift in Sources */,
 				42F15D5525D91E9C00E84B07 /* VirtualTouristModel.swift in Sources */,
 				427511FF25D7E2A700C796B2 /* VirtualTouristApp.swift in Sources */,
+				42F15D7325D9557900E84B07 /* TravelLocationsView.swift in Sources */,
 				42F15D6C25D949DF00E84B07 /* FileManager+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

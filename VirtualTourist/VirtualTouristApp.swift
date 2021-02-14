@@ -17,12 +17,12 @@ struct VirtualTouristApp: App {
             NavigationView {
                 NavigationLink(
                     destination:
-                        Text("Logged In!")
+                        TravelLocationsView(logout: model.logout)
                     ,
                     // We intentionally pass a constant binding to avoid the navigation link from changing the authentication setting, which is set up through other actions (login/logout buttons)
                     isActive: .constant(model.isAuthenticated),
                     label: {
-                        AuthenticationView(loginAction: model.authorize, isLoggingIn: model.isLoggingIn)
+                        AuthenticationView(loginAction: model.login, isLoggingIn: model.isLoggingIn)
                     })
                     .disabled(model.isLoggingIn)
             }

@@ -30,7 +30,7 @@ class VirtualTouristModel: ObservableObject {
         }
     }
 
-    public func authorize() {
+    public func login() {
         guard let path = Bundle.main.path(forResource: "Secrets", ofType: "json") else {
             fatalError("Secrets.json couldn't be found.")
         }
@@ -43,7 +43,15 @@ class VirtualTouristModel: ObservableObject {
         }
 
         doOAuthFlickr(appSecrets.flickrApi)
+    }
 
+    public func logout() {
+        isAuthenticated = false
+        do {
+            try FileManager().removeItem(at: Self.credentialsFile)
+        } catch {
+            print(error.localizedDescription)
+        }
     }
 
     // MARK: Private Methods
