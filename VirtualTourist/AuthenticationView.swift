@@ -15,8 +15,6 @@ struct AuthenticationView: View {
 
     var body: some View {
             ZStack {
-                Color("Mint Cream")
-                    .ignoresSafeArea()
                 VStack {
                     Image("travel")
                         .resizable()

@@ -14,6 +14,7 @@
 		4275120F25D7E79300C796B2 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4275120E25D7E79300C796B2 /* AuthenticationView.swift */; };
 		4275121825D7E88400C796B2 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4275121725D7E88400C796B2 /* View+Extensions.swift */; };
 		4275121C25D7EEE000C796B2 /* StyledButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4275121B25D7EEE000C796B2 /* StyledButton.swift */; };
+		42F15D5525D91E9C00E84B07 /* VirtualTouristModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F15D5425D91E9C00E84B07 /* VirtualTouristModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		4275120E25D7E79300C796B2 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
 		4275121725D7E88400C796B2 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		4275121B25D7EEE000C796B2 /* StyledButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyledButton.swift; sourceTree = "<group>"; };
+		42F15D5425D91E9C00E84B07 /* VirtualTouristModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualTouristModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 		427511FD25D7E2A700C796B2 /* VirtualTourist */ = {
 			isa = PBXGroup;
 			children = (
+				42F15D5325D91E8E00E84B07 /* Model */,
 				4275121A25D7EED400C796B2 /* Elements */,
 				4275121625D7E87A00C796B2 /* Utilities */,
 				427511FE25D7E2A700C796B2 /* VirtualTouristApp.swift */,
@@ -92,6 +95,14 @@
 				4275121B25D7EEE000C796B2 /* StyledButton.swift */,
 			);
 			path = Elements;
+			sourceTree = "<group>";
+		};
+		42F15D5325D91E8E00E84B07 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				42F15D5425D91E9C00E84B07 /* VirtualTouristModel.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -167,6 +178,7 @@
 				4275120125D7E2A700C796B2 /* ContentView.swift in Sources */,
 				4275121C25D7EEE000C796B2 /* StyledButton.swift in Sources */,
 				4275121825D7E88400C796B2 /* View+Extensions.swift in Sources */,
+				42F15D5525D91E9C00E84B07 /* VirtualTouristModel.swift in Sources */,
 				427511FF25D7E2A700C796B2 /* VirtualTouristApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
