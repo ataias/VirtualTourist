@@ -46,6 +46,7 @@ class VirtualTouristModel: ObservableObject {
     }
 
     public func logout() {
+        // Some APIs have an endpoint to invalidate the credential on the server; however, flickr does not seem to have one, so we just delete the credentials locally for logout
         isAuthenticated = false
         do {
             try FileManager().removeItem(at: Self.credentialsFile)
