@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		427511FF25D7E2A700C796B2 /* VirtualTouristApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427511FE25D7E2A700C796B2 /* VirtualTouristApp.swift */; };
-		4275120125D7E2A700C796B2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4275120025D7E2A700C796B2 /* ContentView.swift */; };
 		4275120325D7E2A800C796B2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4275120225D7E2A800C796B2 /* Assets.xcassets */; };
 		4275120625D7E2A800C796B2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4275120525D7E2A800C796B2 /* Preview Assets.xcassets */; };
 		4275120F25D7E79300C796B2 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4275120E25D7E79300C796B2 /* AuthenticationView.swift */; };
@@ -22,7 +21,6 @@
 /* Begin PBXFileReference section */
 		427511FB25D7E2A700C796B2 /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		427511FE25D7E2A700C796B2 /* VirtualTouristApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualTouristApp.swift; sourceTree = "<group>"; };
-		4275120025D7E2A700C796B2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		4275120225D7E2A800C796B2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4275120525D7E2A800C796B2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		4275120725D7E2A800C796B2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -69,7 +67,6 @@
 				4275121A25D7EED400C796B2 /* Elements */,
 				4275121625D7E87A00C796B2 /* Utilities */,
 				427511FE25D7E2A700C796B2 /* VirtualTouristApp.swift */,
-				4275120025D7E2A700C796B2 /* ContentView.swift */,
 				4275120E25D7E79300C796B2 /* AuthenticationView.swift */,
 				4275120225D7E2A800C796B2 /* Assets.xcassets */,
 				4275120725D7E2A800C796B2 /* Info.plist */,
@@ -189,7 +186,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4275120F25D7E79300C796B2 /* AuthenticationView.swift in Sources */,
-				4275120125D7E2A700C796B2 /* ContentView.swift in Sources */,
 				4275121C25D7EEE000C796B2 /* StyledButton.swift in Sources */,
 				4275121825D7E88400C796B2 /* View+Extensions.swift in Sources */,
 				42F15D5525D91E9C00E84B07 /* VirtualTouristModel.swift in Sources */,
