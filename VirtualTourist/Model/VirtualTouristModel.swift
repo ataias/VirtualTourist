@@ -10,11 +10,26 @@ import Combine
 import OAuthSwift
 
 class VirtualTouristModel: ObservableObject {
+    // MARK: - Public Properties
     var oauthswift: OAuthSwift?
     @Published var isAuthenticated = false
     @Published var isLoggingIn = false
 
-    // TODO use the onReceiveValue
+    // MARK: - Private properties
+    private var credentials: FlickrOAuth?
+    private static var credentialsFile = FileManager.documentsDirectory.appendingPathComponent("authentication.json")
+
+    // MARK: Public Methods
+    init() {
+        do {
+            let credentials = try FileManager.read(Self.credentialsFile) as FlickrOAuth?
+            self.credentials = credentials
+            self.isAuthenticated = true
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+
     public func authorize() {
         guard let path = Bundle.main.path(forResource: "Secrets", ofType: "json") else {
             fatalError("Secrets.json couldn't be found.")
@@ -31,6 +46,7 @@ class VirtualTouristModel: ObservableObject {
 
     }
 
+    // MARK: Private Methods
     private func doOAuthFlickr(_ flickrApi: FlickrApi){
         isLoggingIn = true
 
@@ -44,16 +60,30 @@ class VirtualTouristModel: ObservableObject {
         self.oauthswift = oauthswift
         oauthswift.authorizeURLHandler = OAuthSwiftOpenURLExternally.sharedInstance
         let _ = oauthswift.authorize(withCallbackURL: URL(string: "virtualtourist:///authenticate")!) { [self] result in
-            
             self.isLoggingIn = false
             switch result {
-            case .success(let (credential, _, _)):
-                // TODO save credentials
-                print(credential.oauthToken)
+            case .success(let (credential,_, parameters)):
+                save(flickrOauth: credential, parameters: parameters)
                 self.isAuthenticated = true
             case .failure(let error):
                 print(error.description)
             }
+        }
+    }
+
+    private func save(flickrOauth: OAuthSwiftCredential, parameters: [String: Any]) {
+        let credentials = FlickrOAuth(
+            id: (parameters["user_nsid"] as! String).removingPercentEncoding!,
+            username: parameters["username"] as! String,
+            fullName: (parameters["fullname"] as! String).removingPercentEncoding!,
+            token: flickrOauth.oauthToken,
+            tokenSecret: flickrOauth.oauthTokenSecret
+        )
+        do {
+            try FileManager.save(credentials, to: Self.credentialsFile)
+        } catch {
+            print(error.localizedDescription)
+            fatalError(error.localizedDescription)
         }
     }
 
@@ -67,4 +97,13 @@ fileprivate struct AppSecrets: Decodable {
 fileprivate struct FlickrApi: Decodable {
     let key: String
     let secret: String
+}
+
+fileprivate struct FlickrOAuth: Codable {
+    /// The flickr user nsid
+    let id: String
+    let username: String
+    let fullName: String
+    let token: String
+    let tokenSecret: String
 }
