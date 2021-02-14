@@ -45,11 +45,12 @@ struct TravelLocationsView: View {
 
     var body: some View {
         ZStack {
-            Map(coordinateRegion: $coordinateRegion,
-                annotationItems: locations,
-                annotationContent: mapAnnotation(location:)
-            )
-            .gesture(longPress)
+//            Map(coordinateRegion: $coordinateRegion,
+//                annotationItems: locations,
+//                annotationContent: mapAnnotation(location:)
+//            )
+//            .gesture(longPress)
+            MapView(centerCoordinate: $coordinateRegion.center, selectedPlace: .constant(nil), annotations: [])
 //            Color.red
 //                .opacity(0.1)
 //                .simultaneousGesture(longPress)
