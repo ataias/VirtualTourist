@@ -1,5 +1,26 @@
 = VirtualTourist
 
+== Running
+To run this app, you need to set up the `Secrets.json` file first in the following format:
+
+[source,json]
+----
+include::VirtualTourist/Secrets.json.example[]
+----
+
+The values the above json should be replaced by actual API keys. For that, please request API keys at https://www.flickr.com/services/developer/api/[Flickr].
+
+Once you have the keys, you can bootstrap the secrets file with:
+
+[source,bash]
+----
+cp VirtualTourist/Secrets.json.example VirtualTourist/Secrets.json
+----
+
+and then you can modify `Secrets.json` in place.
+
+Once your credentials are set, you can use Xcode 12 or greater to run your app.
+
 == License
 
 See link:LICENSE[LICENSE]

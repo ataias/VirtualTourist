@@ -16,6 +16,7 @@
 		4275121C25D7EEE000C796B2 /* StyledButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4275121B25D7EEE000C796B2 /* StyledButton.swift */; };
 		42F15D5525D91E9C00E84B07 /* VirtualTouristModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F15D5425D91E9C00E84B07 /* VirtualTouristModel.swift */; };
 		42F15D5925D9226100E84B07 /* OAuthSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 42F15D5825D9226100E84B07 /* OAuthSwift */; };
+		42F15D6425D930CF00E84B07 /* Secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = 42F15D6325D930CF00E84B07 /* Secrets.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,8 @@
 		4275121725D7E88400C796B2 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		4275121B25D7EEE000C796B2 /* StyledButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyledButton.swift; sourceTree = "<group>"; };
 		42F15D5425D91E9C00E84B07 /* VirtualTouristModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualTouristModel.swift; sourceTree = "<group>"; };
+		42F15D6325D930CF00E84B07 /* Secrets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Secrets.json; sourceTree = "<group>"; };
+		42F15D6625D932BE00E84B07 /* Secrets.json.example */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secrets.json.example; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +74,8 @@
 				4275120225D7E2A800C796B2 /* Assets.xcassets */,
 				4275120725D7E2A800C796B2 /* Info.plist */,
 				4275120425D7E2A800C796B2 /* Preview Content */,
+				42F15D6325D930CF00E84B07 /* Secrets.json */,
+				42F15D6625D932BE00E84B07 /* Secrets.json.example */,
 			);
 			path = VirtualTourist;
 			sourceTree = "<group>";
@@ -172,6 +177,7 @@
 			files = (
 				4275120625D7E2A800C796B2 /* Preview Assets.xcassets in Resources */,
 				4275120325D7E2A800C796B2 /* Assets.xcassets in Resources */,
+				42F15D6425D930CF00E84B07 /* Secrets.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

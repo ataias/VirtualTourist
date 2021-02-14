@@ -6,11 +6,11 @@
 //
 
 import SwiftUI
+import OAuthSwift
 
 @main
 struct VirtualTouristApp: App {
     @StateObject var model = VirtualTouristModel()
-    @State private var isLoggingIn = false
 
     var body: some Scene {
         WindowGroup {
@@ -22,10 +22,23 @@ struct VirtualTouristApp: App {
                     // We intentionally pass a constant binding to avoid the navigation link from changing the authentication setting, which is set up through other actions (login/logout buttons)
                     isActive: .constant(model.isAuthenticated),
                     label: {
-                        AuthenticationView(loginAction: {}, isLoggingIn: isLoggingIn)
+                        AuthenticationView(loginAction: model.authorize, isLoggingIn: model.isLoggingIn)
                     })
-                    .disabled(isLoggingIn)
+                    .disabled(model.isLoggingIn)
             }
+            .onOpenURL(perform: { url in
+                guard isValid(url: url) else {
+                    print("An error ocurred while authenticating")
+                    return
+                }
+
+                OAuthSwift.handle(url: url)
+            })
         }
+    }
+
+    private func isValid(url: URL) -> Bool {
+        let components = URLComponents(url: url, resolvingAgainstBaseURL: true)
+        return components?.scheme == "virtualtourist" && components?.path == "/authenticate"
     }
 }
