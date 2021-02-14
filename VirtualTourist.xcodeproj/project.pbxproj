@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,6 +15,7 @@
 		4275121825D7E88400C796B2 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4275121725D7E88400C796B2 /* View+Extensions.swift */; };
 		4275121C25D7EEE000C796B2 /* StyledButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4275121B25D7EEE000C796B2 /* StyledButton.swift */; };
 		42F15D5525D91E9C00E84B07 /* VirtualTouristModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F15D5425D91E9C00E84B07 /* VirtualTouristModel.swift */; };
+		42F15D5925D9226100E84B07 /* OAuthSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 42F15D5825D9226100E84B07 /* OAuthSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42F15D5925D9226100E84B07 /* OAuthSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,6 +123,9 @@
 			dependencies = (
 			);
 			name = VirtualTourist;
+			packageProductDependencies = (
+				42F15D5825D9226100E84B07 /* OAuthSwift */,
+			);
 			productName = VirtualTourist;
 			productReference = 427511FB25D7E2A700C796B2 /* VirtualTourist.app */;
 			productType = "com.apple.product-type.application";
@@ -148,6 +153,9 @@
 				Base,
 			);
 			mainGroup = 427511F225D7E2A700C796B2;
+			packageReferences = (
+				42F15D5725D9226100E84B07 /* XCRemoteSwiftPackageReference "OAuthSwift" */,
+			);
 			productRefGroup = 427511FC25D7E2A700C796B2 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -368,6 +376,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		42F15D5725D9226100E84B07 /* XCRemoteSwiftPackageReference "OAuthSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/OAuthSwift/OAuthSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		42F15D5825D9226100E84B07 /* OAuthSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 42F15D5725D9226100E84B07 /* XCRemoteSwiftPackageReference "OAuthSwift" */;
+			productName = OAuthSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 427511F325D7E2A700C796B2 /* Project object */;
 }
