@@ -18,14 +18,9 @@ extension FileManager {
 
     /// Decodes from file URL using the default JSONDecoder
     /// - Parameter url: the url to read the data from
-    /// - Returns: an optional with the decoded data; nil if the files does not exist
-    /// - Throws: when file exists and couldn't load or decode it
-    static func read<T: Decodable>(_ url: URL) throws -> T? {
-
-        if !FileManager.default.fileExists(atPath: url.path) {
-            return nil
-        }
-
+    /// - Returns: the decoded data
+    /// - Throws: when file does not exist and or couldn't load or decode it
+    static func read<T: Decodable>(_ url: URL) throws -> T {
         let data = try Data(contentsOf: url)
         let decoder = JSONDecoder()
         let loaded = try decoder.decode(T.self, from: data)

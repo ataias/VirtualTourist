@@ -11,18 +11,22 @@ import OAuthSwift
 
 class VirtualTouristModel: ObservableObject {
     // MARK: - Public Properties
-    var oauthswift: OAuthSwift?
     @Published var isAuthenticated = false
     @Published var isLoggingIn = false
 
     // MARK: - Private properties
+    private var oauthswift: OAuthSwift?
     private var credentials: FlickrOAuth?
     private static var credentialsFile = FileManager.documentsDirectory.appendingPathComponent("authentication.json")
 
     // MARK: Public Methods
     init() {
+        if !FileManager.default.fileExists(atPath: Self.credentialsFile.path) {
+            return
+        }
+        
         do {
-            let credentials = try FileManager.read(Self.credentialsFile) as FlickrOAuth?
+            let credentials = try FileManager.read(Self.credentialsFile) as FlickrOAuth
             self.credentials = credentials
             self.isAuthenticated = true
         } catch {
