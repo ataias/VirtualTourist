@@ -11,6 +11,7 @@ import OAuthSwift
 
 class VirtualTouristModel: ObservableObject {
     // MARK: - Public Properties
+    @Published var locations: [TravelLocation] = [] // TODO should come from core data
     @Published var isAuthenticated = false
     @Published var isLoggingIn = false
 
@@ -19,13 +20,13 @@ class VirtualTouristModel: ObservableObject {
     private var credentials: FlickrOAuth?
     private static var credentialsFile = FileManager.documentsDirectory.appendingPathComponent("authentication.json")
 
-    // MARK: Public Methods
+    // MARK: - Public Methods
     init() {
         if !FileManager.default.fileExists(atPath: Self.credentialsFile.path) {
             defaultLog.debug("Credentials file does not exist yet. User need to log in.")
             return
         }
-        
+
         do {
             let credentials = try FileManager.read(Self.credentialsFile) as FlickrOAuth
             self.credentials = credentials
@@ -63,7 +64,7 @@ class VirtualTouristModel: ObservableObject {
         }
     }
 
-    // MARK: Private Methods
+    // MARK: - Private Methods
     private func doOAuthFlickr(_ flickrApi: FlickrApi){
         isLoggingIn = true
 
