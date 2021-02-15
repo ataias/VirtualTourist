@@ -7,6 +7,9 @@
 
 import SwiftUI
 import OAuthSwift
+import os
+
+let defaultLog = Logger(subsystem: "br.com.ataias.VirtualTourist", category: "app")
 
 @main
 struct VirtualTouristApp: App {
@@ -28,7 +31,7 @@ struct VirtualTouristApp: App {
             }
             .onOpenURL(perform: { url in
                 guard isValid(url: url) else {
-                    print("An error ocurred while authenticating")
+                    defaultLog.debug("URL \(url) is invalid. Ignoring. Authentication handler will not be called")
                     return
                 }
 

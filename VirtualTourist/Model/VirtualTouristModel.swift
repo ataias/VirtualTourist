@@ -22,6 +22,7 @@ class VirtualTouristModel: ObservableObject {
     // MARK: Public Methods
     init() {
         if !FileManager.default.fileExists(atPath: Self.credentialsFile.path) {
+            defaultLog.debug("Credentials file does not exist yet. User need to log in.")
             return
         }
         
@@ -29,8 +30,9 @@ class VirtualTouristModel: ObservableObject {
             let credentials = try FileManager.read(Self.credentialsFile) as FlickrOAuth
             self.credentials = credentials
             self.isAuthenticated = true
+            defaultLog.info("Authenticated from file with username \(self.credentials!.username, privacy: .private(mask: .hash))")
         } catch {
-            print(error.localizedDescription)
+            defaultLog.error("\(error.localizedDescription)")
         }
     }
 
@@ -53,9 +55,11 @@ class VirtualTouristModel: ObservableObject {
         // Some APIs have an endpoint to invalidate the credential on the server; however, flickr does not seem to have one, so we just delete the credentials locally for logout
         isAuthenticated = false
         do {
+            defaultLog.debug("Logging out user \(self.credentials!.username, privacy: .private(mask: .hash))")
             try FileManager().removeItem(at: Self.credentialsFile)
+
         } catch {
-            print(error.localizedDescription)
+            defaultLog.error("\(error.localizedDescription)")
         }
     }
 
@@ -78,8 +82,9 @@ class VirtualTouristModel: ObservableObject {
             case .success(let (credential,_, parameters)):
                 save(flickrOauth: credential, parameters: parameters)
                 self.isAuthenticated = true
+                defaultLog.info("Authenticated with username \(self.credentials!.username, privacy: .private(mask: .hash))")
             case .failure(let error):
-                print(error.description)
+                defaultLog.error("\(error.localizedDescription)")
             }
         }
     }
@@ -94,8 +99,9 @@ class VirtualTouristModel: ObservableObject {
         )
         do {
             try FileManager.save(credentials, to: Self.credentialsFile)
+            self.credentials = credentials
         } catch {
-            print(error.localizedDescription)
+            defaultLog.error("\(error.localizedDescription)")
             fatalError(error.localizedDescription)
         }
     }
