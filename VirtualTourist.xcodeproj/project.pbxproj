@@ -77,18 +77,16 @@
 		427511FD25D7E2A700C796B2 /* VirtualTourist */ = {
 			isa = PBXGroup;
 			children = (
-				42F15D5325D91E8E00E84B07 /* Model */,
-				4275121A25D7EED400C796B2 /* Elements */,
-				4275121625D7E87A00C796B2 /* Utilities */,
 				427511FE25D7E2A700C796B2 /* VirtualTouristApp.swift */,
-				4275120E25D7E79300C796B2 /* AuthenticationView.swift */,
-				42F15D7225D9557900E84B07 /* TravelLocationsView.swift */,
+				4277224E25DD15120014A260 /* Views */,
+				42F15D5325D91E8E00E84B07 /* Model */,
+				4277225225DD15760014A260 /* Helpers */,
+				4275121625D7E87A00C796B2 /* Utilities */,
 				4275120225D7E2A800C796B2 /* Assets.xcassets */,
 				4275120725D7E2A800C796B2 /* Info.plist */,
 				4275120425D7E2A800C796B2 /* Preview Content */,
 				42F15D6325D930CF00E84B07 /* Secrets.json */,
 				42F15D6625D932BE00E84B07 /* Secrets.json.example */,
-				42AFA3D625D99E28006391F7 /* MapView.swift */,
 			);
 			path = VirtualTourist;
 			sourceTree = "<group>";
@@ -111,13 +109,39 @@
 			path = Utilities;
 			sourceTree = "<group>";
 		};
-		4275121A25D7EED400C796B2 /* Elements */ = {
+		4277224E25DD15120014A260 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4277225325DD15A20014A260 /* Authentication */,
+				4277224F25DD154B0014A260 /* TravelLocations */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		4277224F25DD154B0014A260 /* TravelLocations */ = {
+			isa = PBXGroup;
+			children = (
+				42F15D7225D9557900E84B07 /* TravelLocationsView.swift */,
+				42AFA3D625D99E28006391F7 /* MapView.swift */,
+				42F15D7C25D98D0500E84B07 /* OnTheMapPinView.swift */,
+			);
+			path = TravelLocations;
+			sourceTree = "<group>";
+		};
+		4277225225DD15760014A260 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
 				4275121B25D7EEE000C796B2 /* StyledButton.swift */,
-				42F15D7C25D98D0500E84B07 /* OnTheMapPinView.swift */,
 			);
-			path = Elements;
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		4277225325DD15A20014A260 /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				4275120E25D7E79300C796B2 /* AuthenticationView.swift */,
+			);
+			path = Authentication;
 			sourceTree = "<group>";
 		};
 		42F15D5325D91E8E00E84B07 /* Model */ = {
