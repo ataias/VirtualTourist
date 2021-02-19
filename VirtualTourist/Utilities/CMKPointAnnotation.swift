@@ -10,6 +10,8 @@ import MapKit
 
 /// A Codable sub-class of MKPointAnnotation
 class CMKPointAnnotation: MKPointAnnotation, Codable, Identifiable {
+    var id = UUID()
+
     enum CodingKeys: CodingKey {
         case title
         case subtitle

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MapKit
+import Combine
 
 // MARK: - MapView
 
@@ -15,14 +16,23 @@ struct MapView: UIViewRepresentable {
     @Binding var selectedPlace: MKPointAnnotation?
     @Binding var showingPlaceDetails: Bool
     @Binding var annotations: [CMKPointAnnotation]
+//    @Binding var locations: [TravelLocation]
+
+    var cancellable: AnyCancellable?
 
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
         mapView.centerCoordinate = centerCoordinate
         mapView.delegate = context.coordinator
+
         return mapView
     }
 
+    // When reading the points below, consider making this MapView generic! It could be MapView<T: Location> where Location is a protocol that requires latitude and longitude, besides optionally a title and a subtitle; it would also need identifiable 
+    // TODO move CMKPointAnnotation to this file, maybe just delete it and use MKPointAnnotation directly
+    // TODO use only TravelLocation in the arguments here
+    // TODO CMKPointAnnotation and TravelLocation have a UUID which is the same; we create it on TravelLocation and then give that UUID to the CMKPointAnnotation!
+    // TODO keep the logic here, but check the UUIDs instead and then remove/subtract annotation accordingly
     func updateUIView(_ view: MKMapView, context: Context) {
         let currentAnnotations = Set(self.annotations)
         let oldAnnotations = Set(view.annotations as! [CMKPointAnnotation])
