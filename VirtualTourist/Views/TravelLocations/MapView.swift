@@ -6,14 +6,15 @@
 //
 
 import SwiftUI
-
 import MapKit
+
+// MARK: - MapView
 
 struct MapView: UIViewRepresentable {
     @Binding var centerCoordinate: CLLocationCoordinate2D
     @Binding var selectedPlace: MKPointAnnotation?
-//    @Binding var showingPlaceDetails: Bool
-    var annotations: [MKPointAnnotation]
+    @Binding var showingPlaceDetails: Bool
+    @Binding var annotations: [CMKPointAnnotation]
 
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
@@ -23,10 +24,13 @@ struct MapView: UIViewRepresentable {
     }
 
     func updateUIView(_ view: MKMapView, context: Context) {
-        if annotations.count != view.annotations.count {
-            view.removeAnnotations(view.annotations)
-            view.addAnnotations(annotations)
-        }
+        let currentAnnotations = Set(self.annotations)
+        let oldAnnotations = Set(view.annotations as! [CMKPointAnnotation])
+
+        let toRemove = Array(oldAnnotations.subtracting(currentAnnotations))
+        let toAdd = Array(currentAnnotations.subtracting(oldAnnotations))
+        view.removeAnnotations(toRemove)
+        view.addAnnotations(toAdd)
     }
 
     func makeCoordinator() -> Coordinator {
@@ -43,7 +47,7 @@ struct MapView: UIViewRepresentable {
         func mapViewWillStartLoadingMap(_ mapView: MKMapView) {
             let gesture = UILongPressGestureRecognizer()
             gesture.minimumPressDuration = 1.0
-            gesture.addTarget(self, action: #selector(longPressAction))
+            gesture.addTarget(self, action: #selector(dropPinOnLongPress))
             mapView.addGestureRecognizer(gesture)
         }
 
@@ -53,7 +57,7 @@ struct MapView: UIViewRepresentable {
 
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
             let identifier = "Placemark"
-            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKPinAnnotationView
 
             if annotationView == nil {
                 annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
@@ -63,6 +67,8 @@ struct MapView: UIViewRepresentable {
                 annotationView?.annotation = annotation
             }
 
+            annotationView?.animatesDrop = true
+
             return annotationView
         }
 
@@ -70,17 +76,36 @@ struct MapView: UIViewRepresentable {
             guard let placemark = view.annotation as? MKPointAnnotation else { return }
 
             parent.selectedPlace = placemark
-//            parent.showingPlaceDetails = true
+            parent.showingPlaceDetails = true
         }
 
-        @objc func longPressAction(_ gestureRecognizer: UILongPressGestureRecognizer) {
+        @objc func dropPinOnLongPress(_ gestureRecognizer: UILongPressGestureRecognizer) {
             if gestureRecognizer.state == .began {
                 let cgPointLocation = gestureRecognizer.location(in: gestureRecognizer.view)
                 let view = gestureRecognizer.view as! MKMapView
                 let location: CLLocationCoordinate2D = view.convert(cgPointLocation, toCoordinateFrom: view)
-                print("\(location)")
+                defaultLog.debug("\(location)")
+                addNewLocation(location, toMap: view)
             }
         }
 
+        func addNewLocation(_ location: CLLocationCoordinate2D, toMap mapView: MKMapView) {
+            let newLocation = CMKPointAnnotation()
+            newLocation.title = "Example title"
+            newLocation.coordinate = location
+
+            parent.annotations.append(newLocation)
+            parent.selectedPlace = newLocation
+            parent.showingPlaceDetails = true
+        }
+
+    }
+}
+
+// MARK: - Helper Extensions
+
+extension CLLocationCoordinate2D: CustomStringConvertible {
+    public var description: String {
+        "CLLocationCoordinate2D(latitude: \(self.latitude), longitude: \(self.longitude)"
     }
 }

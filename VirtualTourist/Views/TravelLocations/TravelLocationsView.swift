@@ -22,47 +22,21 @@ struct TravelLocationsView: View {
         center: CLLocationCoordinate2D(latitude: 56.948889, longitude: 24.106389),
         span: MKCoordinateSpan(latitudeDelta: 15, longitudeDelta: 15))
     @State var isDragging = false
-
-    var drag: some Gesture {
-        DragGesture(minimumDistance: 0, coordinateSpace: .local)
-            .onChanged { value in
-                self.isDragging = true
-                print("onChanged: \(value.location)")
-            }
-            .onEnded { value in
-                self.isDragging = false
-                print("onEnded: \(value.location)")
-            }
-    }
-
-    var longPress: some Gesture {
-        LongPressGesture(minimumDuration: 3.0, maximumDistance: 0)
-            .onEnded { value in
-                print("Ended: \(value)")
-            }
-    }
-
+    @State private var pinnedLocations: [CMKPointAnnotation] = []
+    @State private var showingPlaceDetails = false
 
     var body: some View {
         ZStack {
-//            Map(coordinateRegion: $coordinateRegion,
-//                annotationItems: locations,
-//                annotationContent: mapAnnotation(location:)
-//            )
-//            .gesture(longPress)
-            MapView(centerCoordinate: $coordinateRegion.center, selectedPlace: .constant(nil), annotations: [])
-//            Color.red
-//                .opacity(0.1)
-//                .simultaneousGesture(longPress)
-//                .allowsHitTesting(false)
+            MapView(
+                centerCoordinate: $coordinateRegion.center,
+                selectedPlace: .constant(nil),
+                showingPlaceDetails: $showingPlaceDetails,
+                annotations: $pinnedLocations
+            )
         }
-
-
-//        .simultaneousGesture(drag)
-//        .overlay(
-//            Color.red.opacity(0.1)
-//
-//        )
+        .sheet(isPresented: $showingPlaceDetails) {
+            TravelLocationDetail()
+        }
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -74,14 +48,6 @@ struct TravelLocationsView: View {
                     Text("Logout")
                 }
             }
-        }
-    }
-
-    func mapAnnotation(location: TravelLocation) -> MapAnnotation<OnTheMapPinView> {
-        MapAnnotation(coordinate: location.coordinate) {
-            OnTheMapPinView(action: {
-                print("Hello")
-            })
         }
     }
 
