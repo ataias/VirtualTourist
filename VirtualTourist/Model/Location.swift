@@ -9,7 +9,7 @@ import Foundation
 import MapKit
 
 /// A basic requirement for identifiable locations with titles that can be converted in map pins
-protocol Location: Identifiable, Hashable {
+protocol Location: Identifiable, Hashable, CustomStringConvertible {
     var id: UUID { get }
     var title: String { get }
     var subtitle: String { get }
@@ -25,3 +25,4 @@ extension Location {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
 }
+

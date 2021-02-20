@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import OAuthSwift
+import UIKit
 
 class VirtualTouristModel: ObservableObject {
     // MARK: - Public Properties
@@ -107,6 +108,24 @@ class VirtualTouristModel: ObservableObject {
         }
     }
 
+}
+
+
+// MARK: - Photos
+extension VirtualTouristModel {
+    func photos(for location: TravelLocation, onCompletion: ([UIImage]) -> Void) {
+        // TODO
+    }
+}
+
+// MARK: - Location
+extension VirtualTouristModel {
+    func delete(location: TravelLocation) {
+        defaultLog.debug("MODEL_LOCATIONS: \(self.locations)")
+        if let index = locations.firstIndex(where: { location.id == $0.id }) {
+            self.locations.remove(at: index)
+        }
+    }
 }
 
 /// Secrets that are part of the API bundle like api keys

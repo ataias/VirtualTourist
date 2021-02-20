@@ -9,13 +9,25 @@ import SwiftUI
 
 struct TravelLocationDetail: View {
     let location: TravelLocation
-    let deleteLocation: () -> Void
+
+    @State private var images: [UIImage]?
+
+    @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var model: VirtualTouristModel
 
     var body: some View {
         VStack {
             Text("Hello, World!")
             Button("Remove") {
-                deleteLocation()
+                model.delete(location: location)
+                self.presentationMode.wrappedValue.dismiss()
+            }
+        }
+        .onAppear {
+            if images == nil {
+                model.photos(for: location) {
+                    self.images = $0
+                }
             }
         }
     }
@@ -23,6 +35,7 @@ struct TravelLocationDetail: View {
 
 struct TravelLocationDetail_Previews: PreviewProvider {
     static var previews: some View {
-        TravelLocationDetail(location: TravelLocation.sample, deleteLocation: {})
+        TravelLocationDetail(location: TravelLocation.sample)
+            .environmentObject(VirtualTouristModel())
     }
 }

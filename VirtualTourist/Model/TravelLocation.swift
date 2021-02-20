@@ -43,12 +43,20 @@ extension TravelLocation {
         return locations
     }()
 
+    // TODO add some to json
+//    static var sample: TravelLocation {
+//        sampleArray[0]
+//    }
     static var sample: TravelLocation {
-        sampleArray[0]
+        TravelLocation(id: UUID(), title: "Test Location", subtitle: "Sub Location", latitude: 2.5, longitude: 3.5)
     }
 }
 
 extension TravelLocation: Location {
+    var description: String {
+        return "(\(id), \(latitude), \(longitude))"
+    }
+
     init(id: UUID, title: String, subtitle: String, latitude: Double, longitude: Double) {
         self.id = id
         self.title = title

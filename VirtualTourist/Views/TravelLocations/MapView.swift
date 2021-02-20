@@ -17,7 +17,6 @@ import Combine
 struct MapView<T: Location>: UIViewRepresentable {
     @Binding var centerCoordinate: CLLocationCoordinate2D
     @Binding var selectedPlace: T?
-    @Binding var showingPlaceDetails: Bool
     @Binding var locations: [T]
 
     func makeUIView(context: Context) -> MKMapView {
@@ -31,6 +30,7 @@ struct MapView<T: Location>: UIViewRepresentable {
     func updateUIView(_ view: MKMapView, context: Context) {
         updatePins(view, context: context)
         context.coordinator.previousLocations = locations
+        defaultLog.debug("LOCATIONS: \(locations)")
     }
 
     private func updatePins(_ view: MKMapView, context: Context) {
@@ -95,7 +95,6 @@ struct MapView<T: Location>: UIViewRepresentable {
             guard let placemark = view.annotation as? CMKPointAnnotation else { return }
 
             parent.selectedPlace = placemark.convert()
-            parent.showingPlaceDetails = true
         }
 
         // MARK: - Auxiliary Methods
@@ -117,7 +116,6 @@ struct MapView<T: Location>: UIViewRepresentable {
 
             parent.locations.append(newLocation.convert())
             parent.selectedPlace = newLocation.convert()
-            parent.showingPlaceDetails = true
         }
 
     }
