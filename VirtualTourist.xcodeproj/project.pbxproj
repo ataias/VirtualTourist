@@ -14,6 +14,7 @@
 		4275121825D7E88400C796B2 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4275121725D7E88400C796B2 /* View+Extensions.swift */; };
 		4275121C25D7EEE000C796B2 /* StyledButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4275121B25D7EEE000C796B2 /* StyledButton.swift */; };
 		42AFA3D725D99E28006391F7 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42AFA3D625D99E28006391F7 /* MapView.swift */; };
+		42BD81B525E10A98008EB3BC /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD81B425E10A98008EB3BC /* Location.swift */; };
 		42F15D5525D91E9C00E84B07 /* VirtualTouristModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F15D5425D91E9C00E84B07 /* VirtualTouristModel.swift */; };
 		42F15D5925D9226100E84B07 /* OAuthSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 42F15D5825D9226100E84B07 /* OAuthSwift */; };
 		42F15D6425D930CF00E84B07 /* Secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = 42F15D6325D930CF00E84B07 /* Secrets.json */; };
@@ -23,7 +24,6 @@
 		42F15D7A25D98C2900E84B07 /* TravelLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F15D7925D98C2900E84B07 /* TravelLocation.swift */; };
 		42F15D7D25D98D0500E84B07 /* OnTheMapPinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F15D7C25D98D0500E84B07 /* OnTheMapPinView.swift */; };
 		42F15D8425D9904000E84B07 /* mockTravelLocation.json in Resources */ = {isa = PBXBuildFile; fileRef = 42F15D8325D9904000E84B07 /* mockTravelLocation.json */; };
-		42F97D4425DFB2D500E06BD8 /* CMKPointAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F97D4325DFB2D500E06BD8 /* CMKPointAnnotation.swift */; };
 		42F97D4E25DFC4EE00E06BD8 /* TravelLocationDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F97D4D25DFC4EE00E06BD8 /* TravelLocationDetail.swift */; };
 /* End PBXBuildFile section */
 
@@ -37,6 +37,7 @@
 		4275121725D7E88400C796B2 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		4275121B25D7EEE000C796B2 /* StyledButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyledButton.swift; sourceTree = "<group>"; };
 		42AFA3D625D99E28006391F7 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		42BD81B425E10A98008EB3BC /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		42F15D5425D91E9C00E84B07 /* VirtualTouristModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualTouristModel.swift; sourceTree = "<group>"; };
 		42F15D6325D930CF00E84B07 /* Secrets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Secrets.json; sourceTree = "<group>"; };
 		42F15D6625D932BE00E84B07 /* Secrets.json.example */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secrets.json.example; sourceTree = "<group>"; };
@@ -46,7 +47,6 @@
 		42F15D7925D98C2900E84B07 /* TravelLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravelLocation.swift; sourceTree = "<group>"; };
 		42F15D7C25D98D0500E84B07 /* OnTheMapPinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnTheMapPinView.swift; sourceTree = "<group>"; };
 		42F15D8325D9904000E84B07 /* mockTravelLocation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mockTravelLocation.json; sourceTree = "<group>"; };
-		42F97D4325DFB2D500E06BD8 /* CMKPointAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMKPointAnnotation.swift; sourceTree = "<group>"; };
 		42F97D4D25DFC4EE00E06BD8 /* TravelLocationDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravelLocationDetail.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -107,7 +107,6 @@
 		4275121625D7E87A00C796B2 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				42F97D4325DFB2D500E06BD8 /* CMKPointAnnotation.swift */,
 				4275121725D7E88400C796B2 /* View+Extensions.swift */,
 				42F15D6B25D949DF00E84B07 /* FileManager+Extensions.swift */,
 			);
@@ -156,6 +155,7 @@
 				42F15D5425D91E9C00E84B07 /* VirtualTouristModel.swift */,
 				42F15D7525D95A0F00E84B07 /* PhotosForGeolocationModel.swift */,
 				42F15D7925D98C2900E84B07 /* TravelLocation.swift */,
+				42BD81B425E10A98008EB3BC /* Location.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -240,9 +240,9 @@
 				4275120F25D7E79300C796B2 /* AuthenticationView.swift in Sources */,
 				4275121C25D7EEE000C796B2 /* StyledButton.swift in Sources */,
 				4275121825D7E88400C796B2 /* View+Extensions.swift in Sources */,
-				42F97D4425DFB2D500E06BD8 /* CMKPointAnnotation.swift in Sources */,
 				42AFA3D725D99E28006391F7 /* MapView.swift in Sources */,
 				42F15D7625D95A0F00E84B07 /* PhotosForGeolocationModel.swift in Sources */,
+				42BD81B525E10A98008EB3BC /* Location.swift in Sources */,
 				42F15D7D25D98D0500E84B07 /* OnTheMapPinView.swift in Sources */,
 				42F15D7A25D98C2900E84B07 /* TravelLocation.swift in Sources */,
 				42F15D5525D91E9C00E84B07 /* VirtualTouristModel.swift in Sources */,

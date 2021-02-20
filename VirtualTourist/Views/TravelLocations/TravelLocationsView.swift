@@ -12,7 +12,7 @@ struct TravelLocationsView: View {
 
     // MARK: - Input
     let logout: () -> Void
-    let locations: [TravelLocation]
+    @Binding var locations: [TravelLocation]
 
     // MARK: - Environment
     @Environment(\.presentationMode) var presentationMode
@@ -22,16 +22,16 @@ struct TravelLocationsView: View {
         center: CLLocationCoordinate2D(latitude: 56.948889, longitude: 24.106389),
         span: MKCoordinateSpan(latitudeDelta: 15, longitudeDelta: 15))
     @State var isDragging = false
-    @State private var pinnedLocations: [CMKPointAnnotation] = []
     @State private var showingPlaceDetails = false
+    @State private var selectedPlace: TravelLocation?
 
     var body: some View {
         ZStack {
             MapView(
                 centerCoordinate: $coordinateRegion.center,
-                selectedPlace: .constant(nil),
+                selectedPlace: $selectedPlace,
                 showingPlaceDetails: $showingPlaceDetails,
-                annotations: $pinnedLocations
+                locations: $locations
             )
         }
         .sheet(isPresented: $showingPlaceDetails) {
@@ -57,7 +57,7 @@ struct TravelLocationsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             // TODO use sample array
-            TravelLocationsView(logout: {}, locations: TravelLocation.sampleArray)
+            TravelLocationsView(logout: {}, locations: .constant(TravelLocation.sampleArray))
         }
     }
 }

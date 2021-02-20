@@ -11,14 +11,11 @@ import Combine
 
 // MARK: - MapView
 
-struct MapView: UIViewRepresentable {
+struct MapView<T: Location>: UIViewRepresentable {
     @Binding var centerCoordinate: CLLocationCoordinate2D
-    @Binding var selectedPlace: MKPointAnnotation?
+    @Binding var selectedPlace: T?
     @Binding var showingPlaceDetails: Bool
-    @Binding var annotations: [CMKPointAnnotation]
-//    @Binding var locations: [TravelLocation]
-
-    var cancellable: AnyCancellable?
+    @Binding var locations: [T]
 
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
@@ -34,11 +31,16 @@ struct MapView: UIViewRepresentable {
     // TODO CMKPointAnnotation and TravelLocation have a UUID which is the same; we create it on TravelLocation and then give that UUID to the CMKPointAnnotation!
     // TODO keep the logic here, but check the UUIDs instead and then remove/subtract annotation accordingly
     func updateUIView(_ view: MKMapView, context: Context) {
-        let currentAnnotations = Set(self.annotations)
-        let oldAnnotations = Set(view.annotations as! [CMKPointAnnotation])
+        let currentAnnotationsIds = Set(self.locations.map(\.id))
 
-        let toRemove = Array(oldAnnotations.subtracting(currentAnnotations))
-        let toAdd = Array(currentAnnotations.subtracting(oldAnnotations))
+        let viewAnnotations = view.annotations as! [CMKPointAnnotation]
+        let oldAnnotationsIds = Set(viewAnnotations.map(\.id))
+
+        let toRemoveIds = Array(oldAnnotationsIds.subtracting(currentAnnotationsIds))
+        let toAddIds = Array(currentAnnotationsIds.subtracting(oldAnnotationsIds))
+
+        let toRemove = viewAnnotations.filter { toRemoveIds.contains($0.id) }
+        let toAdd = locations.filter { toAddIds.contains($0.id) }.map { CMKPointAnnotation(from: $0) }
         view.removeAnnotations(toRemove)
         view.addAnnotations(toAdd)
     }
@@ -83,9 +85,9 @@ struct MapView: UIViewRepresentable {
         }
 
         func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-            guard let placemark = view.annotation as? MKPointAnnotation else { return }
+            guard let placemark = view.annotation as? CMKPointAnnotation else { return }
 
-            parent.selectedPlace = placemark
+            parent.selectedPlace = placemark.convert()
             parent.showingPlaceDetails = true
         }
 
@@ -100,12 +102,13 @@ struct MapView: UIViewRepresentable {
         }
 
         func addNewLocation(_ location: CLLocationCoordinate2D, toMap mapView: MKMapView) {
+            // Only update the state binding, as this will trigger a view update which will actually add the annotation
             let newLocation = CMKPointAnnotation()
             newLocation.title = "Example title"
             newLocation.coordinate = location
 
-            parent.annotations.append(newLocation)
-            parent.selectedPlace = newLocation
+            parent.locations.append(newLocation.convert())
+            parent.selectedPlace = newLocation.convert()
             parent.showingPlaceDetails = true
         }
 
@@ -117,5 +120,62 @@ struct MapView: UIViewRepresentable {
 extension CLLocationCoordinate2D: CustomStringConvertible {
     public var description: String {
         "CLLocationCoordinate2D(latitude: \(self.latitude), longitude: \(self.longitude)"
+    }
+}
+
+// MARK: - CMKPointAnnotation
+
+/// A Codable sub-class of MKPointAnnotation
+fileprivate class CMKPointAnnotation: MKPointAnnotation, Codable, Identifiable {
+    var id = UUID()
+
+    enum CodingKeys: CodingKey {
+        case title
+        case subtitle
+        case latitude
+        case longitude
+    }
+
+    override init() {
+        super.init()
+    }
+
+    public required init(from decoder: Decoder) throws {
+        super.init()
+
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        title = try container.decode(String?.self, forKey: .title)
+        subtitle = try container.decode(String?.self, forKey: .subtitle)
+
+        let latitude = try container.decode(CLLocationDegrees.self, forKey: .latitude)
+        let longitude = try container.decode(CLLocationDegrees.self, forKey: .longitude)
+        coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(title, forKey: .title)
+        try container.encode(subtitle, forKey: .subtitle)
+        try container.encode(coordinate.latitude, forKey: .latitude)
+        try container.encode(coordinate.longitude, forKey: .longitude)
+    }
+
+    public init<T: Location>(from location: T) {
+        super.init()
+        self.id = location.id
+        self.title = location.title
+        self.subtitle = location.subtitle
+        self.coordinate = location.coordinate
+    }
+
+    public func convert<T: Location>() -> T {
+        return T.init(
+            id: id,
+            title: title ?? "",
+            subtitle: subtitle ?? "",
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude
+        )
     }
 }

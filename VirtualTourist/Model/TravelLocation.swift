@@ -10,15 +10,13 @@ import MapKit
 
 struct TravelLocation: Codable, Identifiable {
     var id = UUID()
-    let createdAt: Date
+    let title: String
+    let subtitle: String
     let latitude: Double
     let longitude: Double
+
+    let createdAt: Date
     let updatedAt: Date
-
-
-    var coordinate: CLLocationCoordinate2D {
-        CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-    }
 
     var formattedCreatedAt: String {
         Self.dateFormatter.string(from: createdAt)
@@ -47,5 +45,17 @@ extension TravelLocation {
 
     static var sample: TravelLocation {
         sampleArray[0]
+    }
+}
+
+extension TravelLocation: Location {
+    init(id: UUID, title: String, subtitle: String, latitude: Double, longitude: Double) {
+        self.id = id
+        self.title = title
+        self.subtitle = subtitle
+        self.latitude = latitude
+        self.longitude = longitude
+        self.createdAt = Date()
+        self.updatedAt = createdAt
     }
 }
