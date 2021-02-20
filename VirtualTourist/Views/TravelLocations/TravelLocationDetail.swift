@@ -8,13 +8,21 @@
 import SwiftUI
 
 struct TravelLocationDetail: View {
+    let location: TravelLocation
+    let deleteLocation: () -> Void
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            Text("Hello, World!")
+            Button("Remove") {
+                deleteLocation()
+            }
+        }
     }
 }
 
 struct TravelLocationDetail_Previews: PreviewProvider {
     static var previews: some View {
-        TravelLocationDetail()
+        TravelLocationDetail(location: TravelLocation.sample, deleteLocation: {})
     }
 }

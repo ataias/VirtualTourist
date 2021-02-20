@@ -11,6 +11,9 @@ import Combine
 
 // MARK: - MapView
 
+/// A map view that accepts an array of locations to create its pins
+///
+/// It is assumed the order of the elements is relatively stable, adding or removing one element
 struct MapView<T: Location>: UIViewRepresentable {
     @Binding var centerCoordinate: CLLocationCoordinate2D
     @Binding var selectedPlace: T?
@@ -21,28 +24,28 @@ struct MapView<T: Location>: UIViewRepresentable {
         let mapView = MKMapView()
         mapView.centerCoordinate = centerCoordinate
         mapView.delegate = context.coordinator
-
+        // TODO should the pins be initialized here?
         return mapView
     }
 
-    // When reading the points below, consider making this MapView generic! It could be MapView<T: Location> where Location is a protocol that requires latitude and longitude, besides optionally a title and a subtitle; it would also need identifiable 
-    // TODO move CMKPointAnnotation to this file, maybe just delete it and use MKPointAnnotation directly
-    // TODO use only TravelLocation in the arguments here
-    // TODO CMKPointAnnotation and TravelLocation have a UUID which is the same; we create it on TravelLocation and then give that UUID to the CMKPointAnnotation!
-    // TODO keep the logic here, but check the UUIDs instead and then remove/subtract annotation accordingly
     func updateUIView(_ view: MKMapView, context: Context) {
-        let currentAnnotationsIds = Set(self.locations.map(\.id))
+        updatePins(view, context: context)
+        context.coordinator.previousLocations = locations
+    }
 
-        let viewAnnotations = view.annotations as! [CMKPointAnnotation]
-        let oldAnnotationsIds = Set(viewAnnotations.map(\.id))
+    private func updatePins(_ view: MKMapView, context: Context) {
+        let cmkAnnotations = view.annotations as! [CMKPointAnnotation]
+        let differences = locations.difference(from: context.coordinator.previousLocations)
 
-        let toRemoveIds = Array(oldAnnotationsIds.subtracting(currentAnnotationsIds))
-        let toAddIds = Array(currentAnnotationsIds.subtracting(oldAnnotationsIds))
-
-        let toRemove = viewAnnotations.filter { toRemoveIds.contains($0.id) }
-        let toAdd = locations.filter { toAddIds.contains($0.id) }.map { CMKPointAnnotation(from: $0) }
-        view.removeAnnotations(toRemove)
-        view.addAnnotations(toAdd)
+        for difference in differences {
+            switch difference {
+            case .insert(offset: _, element: let element, associatedWith: _):
+                view.addAnnotation(CMKPointAnnotation(from: element))
+            case .remove(offset: _, element: let element, associatedWith: _):
+                let annotation = cmkAnnotations.first { $0.id == element.id }
+                view.removeAnnotation(annotation!)
+            }
+        }
     }
 
     func makeCoordinator() -> Coordinator {
@@ -51,11 +54,15 @@ struct MapView<T: Location>: UIViewRepresentable {
 
     class Coordinator: NSObject, MKMapViewDelegate {
         var parent: MapView
+        /// Locations from the time the map view was last updated. Useful for verifying which pins to add and remove on the next update
+        var previousLocations: [T]
 
         init(_ parent: MapView) {
             self.parent = parent
+            self.previousLocations = []
         }
 
+        // MARK: - MKMapViewDelegate
         func mapViewWillStartLoadingMap(_ mapView: MKMapView) {
             let gesture = UILongPressGestureRecognizer()
             gesture.minimumPressDuration = 1.0
@@ -91,6 +98,7 @@ struct MapView<T: Location>: UIViewRepresentable {
             parent.showingPlaceDetails = true
         }
 
+        // MARK: - Auxiliary Methods
         @objc func dropPinOnLongPress(_ gestureRecognizer: UILongPressGestureRecognizer) {
             if gestureRecognizer.state == .began {
                 let cgPointLocation = gestureRecognizer.location(in: gestureRecognizer.view)

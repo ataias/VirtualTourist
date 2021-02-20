@@ -35,7 +35,15 @@ struct TravelLocationsView: View {
             )
         }
         .sheet(isPresented: $showingPlaceDetails) {
-            TravelLocationDetail()
+            if let selectedPlace = selectedPlace {
+                TravelLocationDetail(location: selectedPlace) {
+                    showingPlaceDetails = false
+                    if let index = locations.firstIndex(where: { selectedPlace.id == $0.id }) {
+                        locations.remove(at: index)
+                    }
+                    self.selectedPlace = nil
+                }
+            }
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {
