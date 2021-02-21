@@ -33,6 +33,11 @@ The login uses Flickr OAuth, so you will be taken to their website where you can
 
 image::assets/map.png[Map View, 200]
 
+== Work Notes
+
+=== Authentication
+This app does not really need authentication to work with the Flickr API. However, initially I found the endpoint https://www.flickr.com/services/api/flickr.photos.geo.photosForLocation.html[flickr.photos.geo.photosForLocation] and only after I got it working with authentication and all the Flickr API signing requirements that I noticed it worked only for the images of the authenticated Flickr user. The actual endpoint now used is https://www.flickr.com/services/api/flickr.photos.search.html[flickr.photos.search] which does not require authentication for public photos.
+
 == License
 
 See link:LICENSE[LICENSE]

@@ -45,10 +45,18 @@ class VirtualTouristModel: ObservableObject {
         }
     }
 
+
+}
+
+// MARK: - Flickr Authentication
+extension VirtualTouristModel {
+
+    /// Initialize Flickr OAuth Process
     public func login() {
         doOAuthFlickr(flickrApi)
     }
 
+    /// Deletes authentication files, returning user to the login screen
     public func logout() {
         // Some APIs have an endpoint to invalidate the credential on the server; however, flickr does not seem to have one, so we just delete the credentials locally for logout
         isAuthenticated = false
@@ -125,39 +133,14 @@ class VirtualTouristModel: ObservableObject {
 // MARK: - Photos
 extension VirtualTouristModel {
     func photos(for location: TravelLocation, onCompletion: @escaping ([UIImage]) -> Void, onError: ((Error) -> Void)? = nil) {
-        let baseURL = URL(string: "https://www.flickr.com/services/rest/")!
-        let nonce = AES.GCM.Nonce()
 
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .none
-        let timestamp = formatter.string(from: NSNumber(value: CFAbsoluteTimeGetCurrent() * 1e6))!
+        // TODO select other pages here... depending if there are already photos or not
+        let request = Flickr.Requests.PhotoSearch(location: location, accuracy: nil, page: 1)
+            .urlRequest(flickrApi: flickrApi, credentials: credentials)
 
-
-        defaultLog.debug("Nonce: \(nonce)")
-        let request = FlickrRequest(verb: .GET, baseURL: baseURL, queryItems: [
-
-            ("method", "flickr.photos.search"),
-            ("lat", "\(location.latitude)"),
-            ("lat", "\(location.longitude)"),
-//            ("accuracy", "11"),
-
-            ("format", "json"),
-            ("nojsoncallback", "1"),
-            ("per_page", "20"),
-            ("page", "1"), // TODO select other pages here... depending if there are already photos or not
-
-            ("oauth_consumer_key", flickrApi.key),
-            ("oauth_signature_method", "HMAC-SHA1"),
-            ("oauth_version", "1.0"),
-            ("oauth_token", credentials.token),
-            ("oauth_timestamp", "\(timestamp)"),
-            ("oauth_nonce", "\(nonce)"),
-        ])
-        defaultLog.debug("QueryItems: \(request.queryItems)")
-
-        getPhotosCancellable = URLSession.shared.dataTaskPublisher(for: request.signedRequestWith(consumerSecret: flickrApi.secret, tokenSecret: credentials.tokenSecret))
+        getPhotosCancellable = URLSession.shared.dataTaskPublisher(for: request)
             .map { $0.data }
-            .decode(type: PhotosResponse.self, decoder: JSONDecoder())
+            .decode(type: Flickr.PhotosResponse.self, decoder: JSONDecoder())
             .sink(
                 receiveCompletion: { result in
                     switch result {
@@ -169,8 +152,6 @@ extension VirtualTouristModel {
                     }
                 },
                 receiveValue: {
-//                    let data = String(data: $0, encoding: .utf8)!
-
                     defaultLog.debug("\(String(describing: $0))")
                 }
             )
@@ -194,16 +175,16 @@ extension AES.GCM.Nonce: CustomStringConvertible {
 }
 
 /// Secrets that are part of the API bundle like api keys
-fileprivate struct AppSecrets: Decodable {
+internal struct AppSecrets: Decodable {
     let flickrApi: FlickrApi
 }
 
-fileprivate struct FlickrApi: Decodable {
+internal struct FlickrApi: Decodable {
     let key: String
     let secret: String
 }
 
-fileprivate struct FlickrOAuth: Codable {
+internal struct FlickrOAuth: Codable {
     /// The flickr user nsid
     let id: String
     let username: String
@@ -212,3 +193,57 @@ fileprivate struct FlickrOAuth: Codable {
     let tokenSecret: String
 }
 
+
+// MARK: Flickr.Requests
+extension Flickr {
+    enum Requests<T: Location> {
+        case PhotoSearch(location: T, accuracy: Int? ,page: Int)
+
+        func urlRequest(flickrApi: FlickrApi, credentials: FlickrOAuth) -> URLRequest {
+            let baseURL = URL(string: "https://www.flickr.com/services/rest/")!
+            var request: Flickr.Request
+            switch self {
+            case let .PhotoSearch(location: location, accuracy, page: page):
+                var queryItems = [
+                    ("method", "flickr.photos.search"),
+                    ("lat", "\(location.latitude)"),
+                    ("lat", "\(location.longitude)")
+                ]
+                if let accuracy = accuracy {
+                    queryItems.append(("accuracy", "\(accuracy)"))
+                }
+                queryItems.append(contentsOf: jsonQueryItems(page: page))
+                queryItems.append(contentsOf: oauthQueryItems(flickrApi: flickrApi, credentials: credentials))
+                request = Flickr.Request(verb: .GET, baseURL: baseURL, queryItems: queryItems)
+            }
+
+            return request.signedRequestWith(consumerSecret: flickrApi.secret, tokenSecret: credentials.tokenSecret)
+        }
+
+        private func jsonQueryItems(page: Int) -> [(key: String, value: String )] {
+            return [
+                ("format", "json"),
+                ("nojsoncallback", "1"),
+                ("per_page", "20"),
+                ("page", "\(page)")
+            ]
+        }
+
+        private func oauthQueryItems(flickrApi: FlickrApi, credentials: FlickrOAuth) -> [(key: String, value: String )] {
+            let nonce = AES.GCM.Nonce()
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .none
+            let timestamp = formatter.string(from: NSNumber(value: CFAbsoluteTimeGetCurrent() * 1e6))!
+
+            return [
+                ("oauth_consumer_key", flickrApi.key),
+                ("oauth_signature_method", "HMAC-SHA1"),
+                ("oauth_version", "1.0"),
+                ("oauth_token", credentials.token),
+                ("oauth_timestamp", "\(timestamp)"),
+                ("oauth_nonce", "\(nonce)"),
+            ]
+        }
+    }
+
+}
