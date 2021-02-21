@@ -26,3 +26,20 @@ extension View {
     }
 }
 
+struct VirtualTouristModelModifier: ViewModifier {
+    var model: VirtualTouristModel
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        content
+            .environmentObject(model)
+            .environment(\.managedObjectContext, model.persistentContainer.viewContext)
+    }
+}
+
+extension View {
+    func add(model: VirtualTouristModel) -> some View {
+        self.modifier(VirtualTouristModelModifier(model: model))
+    }
+}
+

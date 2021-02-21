@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20D74" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Photo" representedClassName="Photo" syncable="YES" codeGenerationType="class">
+        <attribute name="farm" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="image" optional="YES" attributeType="Transformable"/>
+        <attribute name="isfamily" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="isfriend" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="ispublic" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="secret" attributeType="String"/>
+        <attribute name="server" attributeType="String"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <relationship name="pins" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Pin" inverseName="photos" inverseEntity="Pin"/>
+    </entity>
+    <entity name="Pin" representedClassName="Pin" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastPage" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="perPage" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="totalPages" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="travelLocation" attributeType="Transformable"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="pins" inverseEntity="Photo"/>
+    </entity>
+    <elements>
+        <element name="Pin" positionX="-613.42578125" positionY="38.70703125" width="128" height="163"/>
+        <element name="Photo" positionX="-147.6640625" positionY="-22.80078125" width="128" height="193"/>
+    </elements>
+</model>

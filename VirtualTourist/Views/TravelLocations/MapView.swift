@@ -30,7 +30,6 @@ struct MapView<T: Location>: UIViewRepresentable {
     func updateUIView(_ view: MKMapView, context: Context) {
         updatePins(view, context: context)
         context.coordinator.previousLocations = locations
-        defaultLog.debug("LOCATIONS: \(locations)")
     }
 
     private func updatePins(_ view: MKMapView, context: Context) {
@@ -103,12 +102,13 @@ struct MapView<T: Location>: UIViewRepresentable {
                 let cgPointLocation = gestureRecognizer.location(in: gestureRecognizer.view)
                 let view = gestureRecognizer.view as! MKMapView
                 let location: CLLocationCoordinate2D = view.convert(cgPointLocation, toCoordinateFrom: view)
-                defaultLog.debug("\(location)")
                 addNewLocation(location, toMap: view)
             }
         }
 
         func addNewLocation(_ location: CLLocationCoordinate2D, toMap mapView: MKMapView) {
+            defaultLog.notice("Dropping pin on \(location)")
+
             // Only update the state binding, as this will trigger a view update which will actually add the annotation
             let newLocation = CMKPointAnnotation()
             newLocation.title = "Example title"

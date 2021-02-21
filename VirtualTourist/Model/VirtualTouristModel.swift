@@ -10,12 +10,24 @@ import Combine
 import OAuthSwift
 import UIKit
 import CryptoKit
+import CoreData
 
 class VirtualTouristModel: ObservableObject {
     // MARK: - Public Properties
     @Published var locations: [TravelLocation] = [] // TODO should come from core data
     @Published var isAuthenticated = false
     @Published var isLoggingIn = false
+
+    var persistentContainer: NSPersistentContainer = {
+        // TODO if in a preview, use in memory persistance
+        let container = NSPersistentContainer(name: "Model")
+        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+            if let error = error as NSError? {
+                fatalError("Unresolved error \(error), \(error.userInfo)")
+            }
+        })
+        return container
+    }()
 
     // MARK: - Private properties
     private var oauthswift: OAuthSwift?
@@ -31,7 +43,7 @@ class VirtualTouristModel: ObservableObject {
         loadSecrets()
 
         if !FileManager.default.fileExists(atPath: Self.credentialsFile.path) {
-            defaultLog.debug("Credentials file does not exist yet. User need to log in.")
+            defaultLog.notice("Credentials file does not exist yet. User need to log in.")
             return
         }
 
@@ -39,7 +51,7 @@ class VirtualTouristModel: ObservableObject {
             let credentials = try FileManager.read(Self.credentialsFile) as FlickrOAuth
             self.credentials = credentials
             self.isAuthenticated = true
-            defaultLog.info("Authenticated from file with username \(self.credentials!.username, privacy: .private(mask: .hash))")
+            defaultLog.notice("Authenticated from file with username \(self.credentials!.username, privacy: .private(mask: .hash))")
         } catch {
             defaultLog.error("\(error.localizedDescription)")
         }
@@ -61,7 +73,7 @@ extension VirtualTouristModel {
         // Some APIs have an endpoint to invalidate the credential on the server; however, flickr does not seem to have one, so we just delete the credentials locally for logout
         isAuthenticated = false
         do {
-            defaultLog.debug("Logging out user \(self.credentials!.username, privacy: .private(mask: .hash))")
+            defaultLog.notice("Logging out user \(self.credentials!.username, privacy: .private(mask: .hash))")
             try FileManager().removeItem(at: Self.credentialsFile)
 
         } catch {
@@ -246,4 +258,19 @@ extension Flickr {
         }
     }
 
+}
+
+// MARK: - Core Data
+extension VirtualTouristModel {
+    func saveContext() {
+        let context = persistentContainer.viewContext
+        if context.hasChanges {
+            do {
+                try context.save()
+            } catch {
+                let nserror = error as NSError
+                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
+        }
+    }
 }

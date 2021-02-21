@@ -31,13 +31,13 @@ struct VirtualTouristApp: App {
             }
             .onOpenURL(perform: { url in
                 guard isValid(url: url) else {
-                    defaultLog.debug("URL \(url) is invalid. Ignoring. Authentication handler will not be called")
+                    defaultLog.notice("URL \(url) is invalid. Ignoring. Authentication handler will not be called")
                     return
                 }
 
                 OAuthSwift.handle(url: url)
             })
-            .environmentObject(model)
+            .add(model: model)
         }
     }
 

@@ -17,6 +17,7 @@
 		42EAEF7725E194F500D29D06 /* FlickrRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EAEF7625E194F500D29D06 /* FlickrRequestTests.swift */; };
 		42EAEF7D25E1AAA600D29D06 /* FlickrRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EAEF7C25E1AAA600D29D06 /* FlickrRequest.swift */; };
 		42EAEF8525E2926D00D29D06 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EAEF8425E2926D00D29D06 /* String+Extensions.swift */; };
+		42EAEF9725E2AFB600D29D06 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 42EAEF9525E2AFB600D29D06 /* Model.xcdatamodeld */; };
 		42F15D5525D91E9C00E84B07 /* VirtualTouristModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F15D5425D91E9C00E84B07 /* VirtualTouristModel.swift */; };
 		42F15D5925D9226100E84B07 /* OAuthSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 42F15D5825D9226100E84B07 /* OAuthSwift */; };
 		42F15D6425D930CF00E84B07 /* Secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = 42F15D6325D930CF00E84B07 /* Secrets.json */; };
@@ -54,6 +55,7 @@
 		42EAEF7625E194F500D29D06 /* FlickrRequestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickrRequestTests.swift; sourceTree = "<group>"; };
 		42EAEF7C25E1AAA600D29D06 /* FlickrRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickrRequest.swift; sourceTree = "<group>"; };
 		42EAEF8425E2926D00D29D06 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
+		42EAEF9625E2AFB600D29D06 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		42F15D5425D91E9C00E84B07 /* VirtualTouristModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualTouristModel.swift; sourceTree = "<group>"; };
 		42F15D6325D930CF00E84B07 /* Secrets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Secrets.json; sourceTree = "<group>"; };
 		42F15D6625D932BE00E84B07 /* Secrets.json.example */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secrets.json.example; sourceTree = "<group>"; };
@@ -190,6 +192,7 @@
 				42F15D5425D91E9C00E84B07 /* VirtualTouristModel.swift */,
 				42F15D7925D98C2900E84B07 /* TravelLocation.swift */,
 				42EAEF7C25E1AAA600D29D06 /* FlickrRequest.swift */,
+				42EAEF9525E2AFB600D29D06 /* Model.xcdatamodeld */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -304,6 +307,7 @@
 				4275120F25D7E79300C796B2 /* AuthenticationView.swift in Sources */,
 				42EAEF8525E2926D00D29D06 /* String+Extensions.swift in Sources */,
 				4275121C25D7EEE000C796B2 /* StyledButton.swift in Sources */,
+				42EAEF9725E2AFB600D29D06 /* Model.xcdatamodeld in Sources */,
 				4275121825D7E88400C796B2 /* View+Extensions.swift in Sources */,
 				42AFA3D725D99E28006391F7 /* MapView.swift in Sources */,
 				42F15D7D25D98D0500E84B07 /* OnTheMapPinView.swift in Sources */,
@@ -586,6 +590,19 @@
 			productName = OAuthSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		42EAEF9525E2AFB600D29D06 /* Model.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				42EAEF9625E2AFB600D29D06 /* Model.xcdatamodel */,
+			);
+			currentVersion = 42EAEF9625E2AFB600D29D06 /* Model.xcdatamodel */;
+			path = Model.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 427511F325D7E2A700C796B2 /* Project object */;
 }

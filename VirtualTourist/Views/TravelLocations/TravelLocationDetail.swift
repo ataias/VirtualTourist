@@ -43,6 +43,6 @@ struct TravelLocationDetail: View {
 struct TravelLocationDetail_Previews: PreviewProvider {
     static var previews: some View {
         TravelLocationDetail(location: TravelLocation.sample)
-            .environmentObject(VirtualTouristModel())
+            .add(model: VirtualTouristModel())
     }
 }

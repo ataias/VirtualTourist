@@ -59,7 +59,7 @@ struct TravelLocationsView_Previews: PreviewProvider {
         NavigationView {
             // TODO use sample array
             TravelLocationsView(locations: .constant(TravelLocation.sampleArray))
-                .environmentObject(VirtualTouristModel())
+                .add(model: VirtualTouristModel())
         }
     }
 }

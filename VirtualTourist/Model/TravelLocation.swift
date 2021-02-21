@@ -14,16 +14,6 @@ struct TravelLocation: Codable, Identifiable {
     let subtitle: String
     let latitude: Double
     let longitude: Double
-
-    let createdAt: Date
-    let updatedAt: Date
-
-    var formattedCreatedAt: String {
-        Self.dateFormatter.string(from: createdAt)
-    }
-    var formattedUpdatedAt: String {
-        Self.dateFormatter.string(from: updatedAt)
-    }
 }
 
 extension TravelLocation {
@@ -55,16 +45,6 @@ extension TravelLocation {
 extension TravelLocation: Location {
     var description: String {
         return "(\(id), \(latitude), \(longitude))"
-    }
-
-    init(id: UUID, title: String, subtitle: String, latitude: Double, longitude: Double) {
-        self.id = id
-        self.title = title
-        self.subtitle = subtitle
-        self.latitude = latitude
-        self.longitude = longitude
-        self.createdAt = Date()
-        self.updatedAt = createdAt
     }
 }
 
