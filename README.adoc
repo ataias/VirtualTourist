@@ -1,5 +1,7 @@
 = VirtualTourist
 
+This app allows users specify travel locations around the world, and create virtual photo albums for each location. The locations and photo albums are stored in Core Data. This app was made as part of the Udacity iOS Developer Nanodegree.
+
 == Running
 To run this app, you need to set up the `Secrets.json` file first in the following format:
 
@@ -19,7 +21,17 @@ cp VirtualTourist/Secrets.json.example VirtualTourist/Secrets.json
 
 and then you can modify `Secrets.json` in place.
 
-Once your credentials are set, you can use Xcode 12 or greater to run your app.
+Once your credentials are set, you can use Xcode 12 or greater to start the app.
+
+== Logging In
+
+Once you open the app, you will face the login screen:
+
+image::assets/login.png[Login Screen, 200]
+
+The login uses Flickr OAuth, so you will be taken to their website where you can login with your credentials. Once you authorize the app on your browser, you will be redirected to VirtualTourist and see the map view where you can drop pins:
+
+image::assets/map.png[Map View, 200]
 
 == License
 
@@ -28,3 +40,4 @@ See link:LICENSE[LICENSE]
 == Credits
 
 - Icons made by https://www.flaticon.com/authors/catkuro[catkuro] from https://www.flaticon.com/[Flaticon]
+- Photo Album images by https://www.flickr.com[flickr]
