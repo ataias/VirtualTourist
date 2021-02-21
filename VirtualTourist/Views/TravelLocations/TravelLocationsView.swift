@@ -19,7 +19,7 @@ struct TravelLocationsView: View {
 
     // MARK: - State and Properties
     @AppStorage("coordinateRegion") private var coordinateRegion = CoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 56.948889, longitude: 24.106389),
+        center: CLLocationCoordinate2D(latitude: -27.605780, longitude: -48.529695),
         span: MKCoordinateSpan(latitudeDelta: 15, longitudeDelta: 15))
     @State private var selectedPlace: TravelLocation?
 
@@ -31,6 +31,7 @@ struct TravelLocationsView: View {
                 locations: $locations
             )
         }
+        .ignoresSafeArea()
         .sheet(item: $selectedPlace) { place in
             TravelLocationDetail(location: place)
         }
@@ -44,8 +45,11 @@ struct TravelLocationsView: View {
                     Image(systemName: "arrow.left")
                     Text("Logout")
                 }
+                .padding(7)
+                .background(Color.white.opacity(0.9).blur(radius: 3.0))
             }
         }
+
     }
 
 }
