@@ -22,7 +22,7 @@ struct TravelLocationDetail: View {
                 getPhotos()
             }
             Button("Remove Location") {
-                model.delete(location: location)
+                model.locations.delete(location: location)
                 self.presentationMode.wrappedValue.dismiss()
             }
         }

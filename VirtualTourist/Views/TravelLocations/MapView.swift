@@ -14,10 +14,10 @@ import Combine
 /// A map view that accepts an array of locations to create its pins
 ///
 /// It is assumed the order of the elements is relatively stable, adding or removing one element
-struct MapView<T: Location>: UIViewRepresentable {
+struct MapView: UIViewRepresentable {
     @Binding var region: MKCoordinateRegion
-    @Binding var selectedPlace: T?
-    @Binding var locations: [T]
+    @Binding var selectedPlace: TravelLocation?
+    @ObservedObject var travelLocationsModel: TravelLocationsModel
 
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
@@ -29,12 +29,12 @@ struct MapView<T: Location>: UIViewRepresentable {
 
     func updateUIView(_ view: MKMapView, context: Context) {
         updatePins(view, context: context)
-        context.coordinator.previousLocations = locations
+        context.coordinator.previousLocations = travelLocationsModel.locations
     }
 
     private func updatePins(_ view: MKMapView, context: Context) {
         let cmkAnnotations = view.annotations as! [CMKPointAnnotation]
-        let differences = locations.difference(from: context.coordinator.previousLocations)
+        let differences = travelLocationsModel.locations.difference(from: context.coordinator.previousLocations)
 
         for difference in differences {
             switch difference {
@@ -54,7 +54,7 @@ struct MapView<T: Location>: UIViewRepresentable {
     class Coordinator: NSObject, MKMapViewDelegate {
         var parent: MapView
         /// Locations from the time the map view was last updated. Useful for verifying which pins to add and remove on the next update
-        var previousLocations: [T]
+        var previousLocations: [TravelLocation]
 
         init(_ parent: MapView) {
             self.parent = parent
@@ -114,7 +114,7 @@ struct MapView<T: Location>: UIViewRepresentable {
             newLocation.title = "Example title"
             newLocation.coordinate = location
 
-            parent.locations.append(newLocation.convert())
+            parent.travelLocationsModel.add(location: newLocation.convert())
             parent.selectedPlace = newLocation.convert()
         }
 

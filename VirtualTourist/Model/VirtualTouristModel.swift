@@ -12,11 +12,51 @@ import UIKit
 import CryptoKit
 import CoreData
 
+class TravelLocationsModel: ObservableObject {
+
+    // MARK: - Properties
+    private var _locations: [TravelLocation] {
+        willSet {
+            objectWillChange.send()
+        }
+    }
+
+    var locations: [TravelLocation] {
+        get { _locations }
+    }
+
+    // MARK: - Methods
+    init() {
+        _locations = []
+        // TODO get core data context and store it
+    }
+
+    func add(location: TravelLocation) {
+        _locations.append(location)
+    }
+
+    func delete(location: TravelLocation) {
+        if let index = _locations.firstIndex(where: { location.id == $0.id }) {
+            self._locations.remove(at: index)
+        }
+    }
+
+    func edit(location: TravelLocation) {
+        fatalError("TODO")
+    }
+}
+
 class VirtualTouristModel: ObservableObject {
     // MARK: - Public Properties
-    @Published var locations: [TravelLocation] = [] // TODO should come from core data
+    // TODO customize the get/set here so that you can manually watch the append notifications
+    // TODO on append, you should add it to CoreData
+    // TODO you try to enforce adding only through CoreData
+    // TODO you could use a private set! Then add a doc string saying how you should update the travel location (through an addLocation or editLocation)
+    @Published var locations = TravelLocationsModel()
     @Published var isAuthenticated = false
     @Published var isLoggingIn = false
+
+    
 
     var persistentContainer: NSPersistentContainer = {
         // TODO if in a preview, use in memory persistance
@@ -31,8 +71,8 @@ class VirtualTouristModel: ObservableObject {
 
     // MARK: - Private properties
     private var oauthswift: OAuthSwift?
-    private var credentials: FlickrOAuth!
-    private var flickrApi: FlickrApi!
+    private var credentials: FlickrOAuth?
+    private var flickrApi: FlickrApi?
     private static var credentialsFile = FileManager.documentsDirectory.appendingPathComponent("authentication.json")
 
     private var getPhotosCancellable: AnyCancellable?
@@ -65,6 +105,10 @@ extension VirtualTouristModel {
 
     /// Initialize Flickr OAuth Process
     public func login() {
+        guard let flickrApi = flickrApi else {
+            defaultLog.error("FlickrApi is null; can't proceed with login")
+            fatalError()
+        }
         doOAuthFlickr(flickrApi)
     }
 
@@ -146,6 +190,13 @@ extension VirtualTouristModel {
 extension VirtualTouristModel {
     func photos(for location: TravelLocation, onCompletion: @escaping ([UIImage]) -> Void, onError: ((Error) -> Void)? = nil) {
 
+        guard let flickrApi = flickrApi,
+              let credentials = credentials
+        else {
+            defaultLog.warning("Skipping photo request; missing credentials")
+            return
+        }
+
         // TODO select other pages here... depending if there are already photos or not
         let request = Flickr.Requests.PhotoSearch(location: location, accuracy: nil, page: 1)
             .urlRequest(flickrApi: flickrApi, credentials: credentials)
@@ -167,15 +218,6 @@ extension VirtualTouristModel {
                     defaultLog.debug("\(String(describing: $0))")
                 }
             )
-    }
-}
-
-// MARK: - Location
-extension VirtualTouristModel {
-    func delete(location: TravelLocation) {
-        if let index = locations.firstIndex(where: { location.id == $0.id }) {
-            self.locations.remove(at: index)
-        }
     }
 }
 

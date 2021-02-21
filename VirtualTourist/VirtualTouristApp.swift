@@ -19,9 +19,7 @@ struct VirtualTouristApp: App {
         WindowGroup {
             NavigationView {
                 NavigationLink(
-                    destination:
-                        TravelLocationsView(locations: $model.locations)
-                    ,
+                    destination: TravelLocationsView(),
                     // We intentionally pass a constant binding to avoid the navigation link from changing the authentication setting, which is set up through other actions (login/logout buttons)
                     isActive: .constant(model.isAuthenticated),
                     label: {

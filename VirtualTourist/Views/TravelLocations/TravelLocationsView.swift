@@ -10,9 +10,6 @@ import MapKit
 
 struct TravelLocationsView: View {
 
-    // MARK: - Input
-    @Binding var locations: [TravelLocation]
-
     // MARK: - Environment
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var model: VirtualTouristModel
@@ -28,7 +25,7 @@ struct TravelLocationsView: View {
             MapView(
                 region: $coordinateRegion.region,
                 selectedPlace: $selectedPlace,
-                locations: $locations
+                travelLocationsModel: model.locations
             )
         }
         .ignoresSafeArea()
@@ -57,8 +54,7 @@ struct TravelLocationsView: View {
 struct TravelLocationsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            // TODO use sample array
-            TravelLocationsView(locations: .constant(TravelLocation.sampleArray))
+            TravelLocationsView()
                 .add(model: VirtualTouristModel())
         }
     }

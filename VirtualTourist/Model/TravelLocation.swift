@@ -9,11 +9,17 @@ import Foundation
 import MapKit
 
 struct TravelLocation: Codable, Identifiable {
-    var id = UUID()
+    let id: UUID
     let title: String
     let subtitle: String
     let latitude: Double
     let longitude: Double
+}
+
+extension TravelLocation {
+    init(title: String, subtitle: String, latitude: Double, longitude: Double) {
+        self.init(id: UUID(), title: title, subtitle: subtitle, latitude: latitude, longitude: longitude)
+    }
 }
 
 extension TravelLocation {
