@@ -16,19 +16,26 @@ struct TravelLocationDetail: View {
     @EnvironmentObject var model: VirtualTouristModel
 
     var body: some View {
-        VStack {
+        VStack(spacing: 10) {
             Text("Hello, World!")
-            Button("Remove") {
+            Button("Get Photos") {
+                getPhotos()
+            }
+            Button("Remove Location") {
                 model.delete(location: location)
                 self.presentationMode.wrappedValue.dismiss()
             }
         }
         .onAppear {
             if images == nil {
-                model.photos(for: location) {
-                    self.images = $0
-                }
+                getPhotos()
             }
+        }
+    }
+
+    func getPhotos() {
+        model.photos(for: location) {
+            self.images = $0
         }
     }
 }

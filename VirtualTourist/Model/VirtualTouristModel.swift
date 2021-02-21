@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import OAuthSwift
 import UIKit
+import CryptoKit
 
 class VirtualTouristModel: ObservableObject {
     // MARK: - Public Properties
@@ -18,11 +19,17 @@ class VirtualTouristModel: ObservableObject {
 
     // MARK: - Private properties
     private var oauthswift: OAuthSwift?
-    private var credentials: FlickrOAuth?
+    private var credentials: FlickrOAuth!
+    private var flickrApi: FlickrApi!
     private static var credentialsFile = FileManager.documentsDirectory.appendingPathComponent("authentication.json")
+
+    private var getPhotosCancellable: AnyCancellable?
 
     // MARK: - Public Methods
     init() {
+
+        loadSecrets()
+
         if !FileManager.default.fileExists(atPath: Self.credentialsFile.path) {
             defaultLog.debug("Credentials file does not exist yet. User need to log in.")
             return
@@ -39,18 +46,7 @@ class VirtualTouristModel: ObservableObject {
     }
 
     public func login() {
-        guard let path = Bundle.main.path(forResource: "Secrets", ofType: "json") else {
-            fatalError("Secrets.json couldn't be found.")
-        }
-        let url = URL(fileURLWithPath: path)
-        let data = try! Data(contentsOf: url)
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        guard let appSecrets = try? decoder.decode(AppSecrets.self, from: data) else {
-            fatalError("Could not decode secrets file")
-        }
-
-        doOAuthFlickr(appSecrets.flickrApi)
+        doOAuthFlickr(flickrApi)
     }
 
     public func logout() {
@@ -66,7 +62,22 @@ class VirtualTouristModel: ObservableObject {
     }
 
     // MARK: - Private Methods
-    private func doOAuthFlickr(_ flickrApi: FlickrApi){
+    private func loadSecrets() {
+        guard let path = Bundle.main.path(forResource: "Secrets", ofType: "json") else {
+            fatalError("Secrets.json couldn't be found.")
+        }
+        let url = URL(fileURLWithPath: path)
+        let data = try! Data(contentsOf: url)
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        guard let appSecrets = try? decoder.decode(AppSecrets.self, from: data) else {
+            fatalError("Could not decode secrets file")
+        }
+
+        self.flickrApi = appSecrets.flickrApi
+
+    }
+    private func doOAuthFlickr(_ flickrApi: FlickrApi) {
         isLoggingIn = true
 
         let oauthswift = OAuth1Swift(
@@ -113,18 +124,72 @@ class VirtualTouristModel: ObservableObject {
 
 // MARK: - Photos
 extension VirtualTouristModel {
-    func photos(for location: TravelLocation, onCompletion: ([UIImage]) -> Void) {
-        // TODO
+    func photos(for location: TravelLocation, onCompletion: @escaping ([UIImage]) -> Void, onError: ((Error) -> Void)? = nil) {
+        let baseURL = URL(string: "https://www.flickr.com/services/rest/")!
+        let nonce = AES.GCM.Nonce()
+
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .none
+        let timestamp = formatter.string(from: NSNumber(value: CFAbsoluteTimeGetCurrent() * 1e6))!
+
+
+        defaultLog.debug("Nonce: \(nonce)")
+        let request = FlickrRequest(verb: .GET, baseURL: baseURL, queryItems: [
+
+            ("method", "flickr.photos.search"),
+            ("lat", "\(location.latitude)"),
+            ("lat", "\(location.longitude)"),
+//            ("accuracy", "11"),
+
+            ("format", "json"),
+            ("nojsoncallback", "1"),
+            ("per_page", "20"),
+            ("page", "1"), // TODO select other pages here... depending if there are already photos or not
+
+            ("oauth_consumer_key", flickrApi.key),
+            ("oauth_signature_method", "HMAC-SHA1"),
+            ("oauth_version", "1.0"),
+            ("oauth_token", credentials.token),
+            ("oauth_timestamp", "\(timestamp)"),
+            ("oauth_nonce", "\(nonce)"),
+        ])
+        defaultLog.debug("QueryItems: \(request.queryItems)")
+
+        getPhotosCancellable = URLSession.shared.dataTaskPublisher(for: request.signedRequestWith(consumerSecret: flickrApi.secret, tokenSecret: credentials.tokenSecret))
+            .map { $0.data }
+            .decode(type: PhotosResponse.self, decoder: JSONDecoder())
+            .sink(
+                receiveCompletion: { result in
+                    switch result {
+                    case .failure(let error):
+                        print("Error when running \(#function): \(error)")
+                        onError?(error)
+                    case .finished:
+                        print("Finished \(#function) successfully")
+                    }
+                },
+                receiveValue: {
+//                    let data = String(data: $0, encoding: .utf8)!
+
+                    defaultLog.debug("\(String(describing: $0))")
+                }
+            )
     }
 }
 
 // MARK: - Location
 extension VirtualTouristModel {
     func delete(location: TravelLocation) {
-        defaultLog.debug("MODEL_LOCATIONS: \(self.locations)")
         if let index = locations.firstIndex(where: { location.id == $0.id }) {
             self.locations.remove(at: index)
         }
+    }
+}
+
+// MARK: - CryptoKit
+extension AES.GCM.Nonce: CustomStringConvertible {
+    public var description: String {
+        makeIterator().map { "\($0)" }.joined()
     }
 }
 
@@ -146,3 +211,4 @@ fileprivate struct FlickrOAuth: Codable {
     let token: String
     let tokenSecret: String
 }
+
