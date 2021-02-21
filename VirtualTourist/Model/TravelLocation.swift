@@ -20,6 +20,10 @@ extension TravelLocation {
     init(title: String, subtitle: String, latitude: Double, longitude: Double) {
         self.init(id: UUID(), title: title, subtitle: subtitle, latitude: latitude, longitude: longitude)
     }
+
+    func encoded() -> Data {
+        try! JSONEncoder().encode(self)
+    }
 }
 
 extension TravelLocation {

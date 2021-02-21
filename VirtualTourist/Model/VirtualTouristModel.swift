@@ -28,11 +28,19 @@ class TravelLocationsModel: ObservableObject {
     // MARK: - Methods
     init() {
         _locations = []
-        // TODO get core data context and store it
     }
 
     func add(location: TravelLocation) {
         _locations.append(location)
+
+        let pin = Pin(context: Persistency.persistentContainer.viewContext)
+        pin.id = location.id
+        pin.travelLocation = location.encoded()
+        pin.createdAt = Date()
+        pin.updatedAt = Date()
+
+        Persistency.saveContext()
+        
     }
 
     func delete(location: TravelLocation) {
@@ -55,19 +63,6 @@ class VirtualTouristModel: ObservableObject {
     @Published var locations = TravelLocationsModel()
     @Published var isAuthenticated = false
     @Published var isLoggingIn = false
-
-    
-
-    var persistentContainer: NSPersistentContainer = {
-        // TODO if in a preview, use in memory persistance
-        let container = NSPersistentContainer(name: "Model")
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
-            if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
-            }
-        })
-        return container
-    }()
 
     // MARK: - Private properties
     private var oauthswift: OAuthSwift?
@@ -300,19 +295,4 @@ extension Flickr {
         }
     }
 
-}
-
-// MARK: - Core Data
-extension VirtualTouristModel {
-    func saveContext() {
-        let context = persistentContainer.viewContext
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-            }
-        }
-    }
 }

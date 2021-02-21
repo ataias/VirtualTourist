@@ -18,12 +18,12 @@
         <attribute name="lastPage" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="perPage" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="totalPages" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="travelLocation" attributeType="Transformable"/>
+        <attribute name="travelLocation" attributeType="Binary"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="pins" inverseEntity="Photo"/>
     </entity>
     <elements>
-        <element name="Pin" positionX="-613.42578125" positionY="38.70703125" width="128" height="163"/>
         <element name="Photo" positionX="-147.6640625" positionY="-22.80078125" width="128" height="193"/>
+        <element name="Pin" positionX="-613.42578125" positionY="38.70703125" width="128" height="149"/>
     </elements>
 </model>

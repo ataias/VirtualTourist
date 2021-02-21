@@ -33,7 +33,7 @@ struct VirtualTouristModelModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .environmentObject(model)
-            .environment(\.managedObjectContext, model.persistentContainer.viewContext)
+            .environment(\.managedObjectContext, Persistency.persistentContainer.viewContext)
     }
 }
 
