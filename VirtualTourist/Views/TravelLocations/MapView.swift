@@ -15,13 +15,13 @@ import Combine
 ///
 /// It is assumed the order of the elements is relatively stable, adding or removing one element
 struct MapView<T: Location>: UIViewRepresentable {
-    @Binding var centerCoordinate: CLLocationCoordinate2D
+    @Binding var region: MKCoordinateRegion
     @Binding var selectedPlace: T?
     @Binding var locations: [T]
 
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
-        mapView.centerCoordinate = centerCoordinate
+        mapView.region = region
         mapView.delegate = context.coordinator
         // TODO should the pins be initialized here?
         return mapView
@@ -71,7 +71,7 @@ struct MapView<T: Location>: UIViewRepresentable {
         }
 
         func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
-            parent.centerCoordinate = mapView.centerCoordinate
+            parent.region = mapView.region
         }
 
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -183,5 +183,71 @@ fileprivate class CMKPointAnnotation: MKPointAnnotation, Codable, Identifiable {
             latitude: coordinate.latitude,
             longitude: coordinate.longitude
         )
+    }
+}
+
+// MARK: - Codable Coordinate Region
+
+struct CoordinateRegion: Codable {
+
+    var region: MKCoordinateRegion
+
+    enum CodingKeys: CodingKey {
+        case latitude
+        case longitude
+        case latitudeDelta
+        case longitudeDelta
+    }
+
+    public init(center: CLLocationCoordinate2D, span: MKCoordinateSpan) {
+        self.region = MKCoordinateRegion(center: center, span: span)
+    }
+
+    public init(from decoder: Decoder) throws {
+
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        let latitude = try container.decode(CLLocationDegrees.self, forKey: .latitude)
+        let longitude = try container.decode(CLLocationDegrees.self, forKey: .longitude)
+
+        let latitudeDelta = try container.decode(CLLocationDegrees.self, forKey: .latitudeDelta)
+        let longitudeDelta = try container.decode(CLLocationDegrees.self, forKey: .longitudeDelta)
+
+        let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        let span = MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
+
+        self.region = MKCoordinateRegion(center: coordinate, span: span)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(region.center.latitude, forKey: .latitude)
+        try container.encode(region.center.longitude, forKey: .longitude)
+        try container.encode(region.span.latitudeDelta, forKey: .latitudeDelta)
+        try container.encode(region.span.longitudeDelta, forKey: .longitudeDelta)
+    }
+
+}
+
+
+// RawRepresentable is useful for using this struct with AppStorage
+// Source: [Save Custom Codable Types in App Storage or Scene Storage](https://lostmoa.com/blog/SaveCustomCodableTypesInAppStorageOrSceneStorage/) by Natalia Panferova
+extension CoordinateRegion: RawRepresentable {
+    public init?(rawValue: String) {
+        guard let data = rawValue.data(using: .utf8),
+              let result = try? JSONDecoder().decode(CoordinateRegion.self, from: data)
+        else {
+            return nil
+        }
+        self = result
+    }
+
+    public var rawValue: String {
+        guard let data = try? JSONEncoder().encode(self),
+              let result = String(data: data, encoding: .utf8)
+        else {
+            return ""
+        }
+        return result
     }
 }

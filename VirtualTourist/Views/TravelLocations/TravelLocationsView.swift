@@ -18,7 +18,7 @@ struct TravelLocationsView: View {
     @EnvironmentObject var model: VirtualTouristModel
 
     // MARK: - State and Properties
-    @State private var coordinateRegion = MKCoordinateRegion(
+    @AppStorage("coordinateRegion") private var coordinateRegion = CoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 56.948889, longitude: 24.106389),
         span: MKCoordinateSpan(latitudeDelta: 15, longitudeDelta: 15))
     @State private var selectedPlace: TravelLocation?
@@ -26,7 +26,7 @@ struct TravelLocationsView: View {
     var body: some View {
         ZStack {
             MapView(
-                centerCoordinate: $coordinateRegion.center,
+                region: $coordinateRegion.region,
                 selectedPlace: $selectedPlace,
                 locations: $locations
             )
@@ -59,3 +59,4 @@ struct TravelLocationsView_Previews: PreviewProvider {
         }
     }
 }
+
