@@ -11,7 +11,7 @@ import CoreData
 class Persistency {
     static var persistentContainer: NSPersistentContainer = {
         // TODO if in a preview, use in memory persistance
-        let container = NSPersistentContainer(name: "Model")
+        let container = NSPersistentContainer(name: "VirtualTouristDataModel")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
