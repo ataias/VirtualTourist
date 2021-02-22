@@ -2,6 +2,7 @@
 
 import Foundation
 import CryptoKit
+import VirtualTourist
 
 let keyData = "key".data(using: .utf8)!
 let key = SymmetricKey(data: keyData)

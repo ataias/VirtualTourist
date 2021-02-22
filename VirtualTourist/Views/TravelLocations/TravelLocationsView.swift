@@ -25,7 +25,7 @@ struct TravelLocationsView: View {
             MapView(
                 region: $coordinateRegion.region,
                 selectedPlace: $selectedPlace,
-                travelLocationsModel: model.locations
+                travelLocationsModel: model.travelLocationModel
             )
         }
         .ignoresSafeArea()

@@ -11,56 +11,12 @@ import OAuthSwift
 import UIKit
 import CryptoKit
 import CoreData
+import SwiftUI
 
-class TravelLocationsModel: ObservableObject {
-
-    // MARK: - Properties
-    private var _locations: [TravelLocation] {
-        willSet {
-            objectWillChange.send()
-        }
-    }
-
-    var locations: [TravelLocation] {
-        get { _locations }
-    }
-
-    // MARK: - Methods
-    init() {
-        _locations = []
-    }
-
-    func add(location: TravelLocation) {
-        _locations.append(location)
-
-        let pin = Pin(context: Persistency.persistentContainer.viewContext)
-        pin.id = location.id
-        pin.travelLocation = location.encoded()
-        pin.createdAt = Date()
-        pin.updatedAt = Date()
-
-        Persistency.saveContext()
-        
-    }
-
-    func delete(location: TravelLocation) {
-        if let index = _locations.firstIndex(where: { location.id == $0.id }) {
-            self._locations.remove(at: index)
-        }
-    }
-
-    func edit(location: TravelLocation) {
-        fatalError("TODO")
-    }
-}
-
+// MARK: - VirtualTouristModel
 class VirtualTouristModel: ObservableObject {
     // MARK: - Public Properties
-    // TODO customize the get/set here so that you can manually watch the append notifications
-    // TODO on append, you should add it to CoreData
-    // TODO you try to enforce adding only through CoreData
-    // TODO you could use a private set! Then add a doc string saying how you should update the travel location (through an addLocation or editLocation)
-    @Published var locations = TravelLocationsModel()
+    @Published var travelLocationModel = TravelLocationsModel()
     @Published var isAuthenticated = false
     @Published var isLoggingIn = false
 
@@ -295,4 +251,89 @@ extension Flickr {
         }
     }
 
+}
+
+// MARK: - TravelLocationsModel
+class TravelLocationsModel: NSObject, NSFetchedResultsControllerDelegate, ObservableObject {
+
+    // MARK: Properties
+    private var _locations: [TravelLocation] {
+        willSet {
+            objectWillChange.send()
+        }
+    }
+
+    var fetchRequest: NSFetchRequest<Pin>
+    var fetchedResultsController: NSFetchedResultsController<Pin>
+
+    var locations: [TravelLocation] {
+        get { _locations }
+    }
+
+    // MARK: Methods
+    override init() {
+        _locations = []
+        fetchRequest = Pin.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "createdAt", ascending: false)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: Persistency.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        super.init()
+
+        fetchedResultsController.delegate = self
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            fatalError("The fetch could not be executed: \(error.localizedDescription)")
+        }
+    }
+
+    func add(location: TravelLocation) {
+        let pin = Pin(context: Persistency.persistentContainer.viewContext)
+        pin.id = location.id
+        pin.travelLocation = location.encoded()
+        pin.createdAt = Date()
+        pin.updatedAt = Date()
+        Persistency.saveContext()
+    }
+
+    func delete(location: TravelLocation) {
+//        if let index = _locations.firstIndex(where: { location.id == $0.id }) {
+//            self._locations.remove(at: index)
+//        }
+        fatalError("TODO: You should delete on CoreData and remove this error")
+    }
+
+    func edit(location: TravelLocation) {
+        fatalError("TODO")
+    }
+
+    // MARK: NSFetchResultsControllerDelegate
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        // TODO this object is not necessary if we are talking simply about updates to the locations array
+        // however, it might be needed if we want to watch notifications in the "photos" array, which is not part of the travel location at the moment... should it be? if yes then we remove this later
+        objectWillChange.send()
+    }
+
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        switch type {
+        case .insert:
+            let pin = anObject as! Pin
+            _locations.append(pin.unwrappedTravelLocation)
+        case .delete:
+            // TODO need to validate this works!
+            let pin = anObject as! Pin
+            let location = pin.unwrappedTravelLocation
+            let index = _locations.firstIndex(where: { location.id == $0.id })!
+            self._locations.remove(at: index)
+        default:
+            break
+        }
+    }
+}
+
+extension Pin {
+    var unwrappedTravelLocation: TravelLocation {
+        try! JSONDecoder().decode(TravelLocation.self, from: self.travelLocation!)
+    }
 }
