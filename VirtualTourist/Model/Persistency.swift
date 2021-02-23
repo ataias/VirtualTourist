@@ -20,6 +20,10 @@ class Persistency {
         return container
     }()
 
+    static var viewContext: NSManagedObjectContext {
+        persistentContainer.viewContext
+    }
+
     static func saveContext() {
         let context = persistentContainer.viewContext
         if context.hasChanges {

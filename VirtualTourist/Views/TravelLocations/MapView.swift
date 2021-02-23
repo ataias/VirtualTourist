@@ -39,6 +39,7 @@ struct MapView: UIViewRepresentable {
         for difference in differences {
             switch difference {
             case .insert(offset: _, element: let element, associatedWith: _):
+                // TODO add haptic feedback here
                 view.addAnnotation(CMKPointAnnotation(from: element))
             case .remove(offset: _, element: let element, associatedWith: _):
                 let annotation = cmkAnnotations.first { $0.id == element.id }

@@ -277,7 +277,7 @@ class TravelLocationsModel: NSObject, NSFetchedResultsControllerDelegate, Observ
         let sortDescriptor = NSSortDescriptor(key: "createdAt", ascending: false)
         fetchRequest.sortDescriptors = [sortDescriptor]
 
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: Persistency.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: Persistency.viewContext, sectionNameKeyPath: nil, cacheName: nil)
         super.init()
 
         fetchedResultsController.delegate = self
@@ -297,11 +297,28 @@ class TravelLocationsModel: NSObject, NSFetchedResultsControllerDelegate, Observ
         Persistency.saveContext()
     }
 
+    /// Deletes a location from CoreData given the TravelLocation
+    ///
+    /// One of my decisions for this project was trying to “isolate” the “TravelLocation” struct from the
+    /// actual object I would store in CoreData. In other words: use CoreData in the model file, but use
+    /// TravelLocation elsewhere in the project.
+    ///
+    /// The add and delete location methods then accept “TravelLocation” instead of “Pin” which is the
+    /// CoreData entity. Adding is easy enough, and deleting can also be easy, but I am not happy with
+    /// the solution. Here I look at my in-memory objects to find the one with the given id, instead of telling
+    /// CoreData directly to delete the one with the given id. The `first` method is `O(n)`, so this delete
+    /// method is also `O(n)`
+    ///
+    /// I decided to keep this as it was my original intention and I was curious to see how to do it, but I am
+    /// not sure if I would follow this in a future project. Maybe just using the CoreData model directly throughout
+    /// the app could be more efficient.
+    ///
+    /// - Complexity
+    /// `O(n)`
     func delete(location: TravelLocation) {
-//        if let index = _locations.firstIndex(where: { location.id == $0.id }) {
-//            self._locations.remove(at: index)
-//        }
-        fatalError("TODO: You should delete on CoreData and remove this error")
+        let pin = fetchedResultsController.fetchedObjects!.first { $0.id! == location.id }!
+        Persistency.viewContext.delete(pin)
+        Persistency.saveContext()
     }
 
     func edit(location: TravelLocation) {
