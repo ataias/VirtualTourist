@@ -83,21 +83,41 @@ extension Flickr {
     }
 
     struct Photos: Codable {
-        let page, pages, perPage: Int
+        let page: Int
+        let pages: Int
+        let perPage: Int
         let total: String
-        let photo: [Photo]
+        let photos: [Photo]
 
         enum CodingKeys: String, CodingKey {
             case page, pages
             case perPage = "perpage"
-            case total, photo
+            case total
+            case photos = "photo"
         }
     }
 
     struct Photo: Codable {
-        let id, owner, secret, server: String
+        let id: String
+        let owner: String
+        let secret: String
+        let server: String
         let farm: Int
         let title: String
-        let ispublic, isfriend, isfamily: Int
+        let isPublic: Int
+        let isFriend: Int
+        let isFamily: Int
+
+        enum CodingKeys: String, CodingKey {
+            case id
+            case owner
+            case secret
+            case server
+            case farm
+            case title
+            case isPublic = "ispublic"
+            case isFriend = "isfriend"
+            case isFamily = "isfamily"
+        }
     }
 }

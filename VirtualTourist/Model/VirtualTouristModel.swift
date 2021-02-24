@@ -155,6 +155,7 @@ extension VirtualTouristModel {
         getPhotosCancellable = URLSession.shared.dataTaskPublisher(for: request)
             .map { $0.data }
             .decode(type: Flickr.PhotosResponse.self, decoder: JSONDecoder())
+            // TODO implement flatmap here
             .sink(
                 receiveCompletion: { result in
                     switch result {

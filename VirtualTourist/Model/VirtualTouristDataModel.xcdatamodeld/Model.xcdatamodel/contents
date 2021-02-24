@@ -10,7 +10,7 @@
         <attribute name="secret" attributeType="String"/>
         <attribute name="server" attributeType="String"/>
         <attribute name="title" optional="YES" attributeType="String"/>
-        <relationship name="pins" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Pin" inverseName="photos" inverseEntity="Pin"/>
+        <relationship name="pins" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Pin" inverseName="photos" inverseEntity="Pin"/>
     </entity>
     <entity name="Pin" representedClassName="Pin" syncable="YES" codeGenerationType="class">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
@@ -23,7 +23,7 @@
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="pins" inverseEntity="Photo"/>
     </entity>
     <elements>
-        <element name="Photo" positionX="-147.6640625" positionY="-22.80078125" width="128" height="193"/>
+        <element name="Photo" positionX="-286.95703125" positionY="54.99609375" width="128" height="193"/>
         <element name="Pin" positionX="-613.42578125" positionY="38.70703125" width="128" height="149"/>
     </elements>
 </model>
