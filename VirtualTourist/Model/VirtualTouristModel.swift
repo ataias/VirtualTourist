@@ -158,16 +158,20 @@ extension VirtualTouristModel {
             .map { $0.data }
             .decode(type: Flickr.PhotosResponse.self, decoder: JSONDecoder())
             .flatMap { $0.photos.photos.publisher }
-            .map({ (photo: Flickr.Photo) -> URL in
-                let size_suffix = "z"
-                let file = "\(photo.id)_\(photo.secret)_\(size_suffix).jpg"
-                let link = "https://live.staticflickr.com/\(photo.server)/\(file)"
-                return URL(string: link)!
-            })
-            .flatMap { (url:URL) in URLSession.shared.dataTaskPublisher(for: url).mapError { error -> URLError in return URLError(URLError.Code(rawValue: 404)) } }
-            .map { $0.data }
-            .map { UIImage(data: $0) }
-            .compactMap { $0 }
+            .flatMap { (photo:Flickr.Photo) in
+                URLSession
+                    .shared
+                    .dataTaskPublisher(for: photo.url)
+                        .mapError { error -> URLError in
+                            return URLError(URLError.Code(rawValue: 404))
+                        }
+                    .map {
+                        var photo = photo
+                        photo.image = $0.data
+                        return photo
+                    }
+            }
+            .map { ($0, UIImage(data: $0.image!)) }
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { result in
@@ -179,10 +183,21 @@ extension VirtualTouristModel {
                         print("Finished \(#function) successfully")
                     }
                 },
-                receiveValue: { (image: UIImage) in
+                receiveValue: { (photo: Flickr.Photo, image: UIImage?) in
+                    onPhotoCompletion(image!)
+                    print(photo)
                     // TODO add the image to CoreData
-                    onPhotoCompletion(image)
-//                    defaultLog.debug("\(String(describing: url))")
+                    let pinId = pin.objectID
+                    Persistency.backgroundContext.perform {
+                        let ctx = Persistency.backgroundContext!
+                        let pin = ctx.object(with: pinId) as! Pin
+                        let _ = Photo(context: ctx, photo: photo, image: image!, pin: pin)
+                        do {
+                            try ctx.save()
+                        } catch {
+                            defaultLog.error("\(error as NSObject)")
+                        }
+                    }
                 }
             )
     }

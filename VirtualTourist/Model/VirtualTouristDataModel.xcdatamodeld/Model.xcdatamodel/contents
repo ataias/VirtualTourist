@@ -3,10 +3,10 @@
     <entity name="Photo" representedClassName="Photo" syncable="YES" codeGenerationType="class">
         <attribute name="farm" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="String"/>
-        <attribute name="image" optional="YES" attributeType="Transformable"/>
-        <attribute name="isfamily" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="isfriend" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="ispublic" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="image" optional="YES" attributeType="Binary"/>
+        <attribute name="isFamily" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="isFriend" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="isPublic" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="secret" attributeType="String"/>
         <attribute name="server" attributeType="String"/>
         <attribute name="title" optional="YES" attributeType="String"/>
