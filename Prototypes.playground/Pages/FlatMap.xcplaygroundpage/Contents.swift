@@ -9,6 +9,7 @@ let data = [[1,2,3], [4,5,6], [7,8,9]]
 // How do I do that? I could do flatMap
 data.publisher
     .flatMap { $0.publisher }
+    .map { "\($0 + 1)" }
     .sink { (result) in
         print(result)
     }

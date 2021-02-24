@@ -139,7 +139,7 @@ extension VirtualTouristModel {
 
 // MARK: - Photos
 extension VirtualTouristModel {
-    func photos(for location: TravelLocation, onCompletion: @escaping ([UIImage]) -> Void, onError: ((Error) -> Void)? = nil) {
+    func photos(for location: TravelLocation, onPhotoCompletion: @escaping (UIImage) -> Void, onError: ((Error) -> Void)? = nil) {
 
         guard let flickrApi = flickrApi,
               let credentials = credentials
@@ -148,6 +148,8 @@ extension VirtualTouristModel {
             return
         }
 
+        let pin = travelLocationModel.fetchedResultsController.fetchedObjects!.first { $0.id == location.id }!
+
         // TODO select other pages here... depending if there are already photos or not
         let request = Flickr.Requests.PhotoSearch(location: location, accuracy: nil, page: 1)
             .urlRequest(flickrApi: flickrApi, credentials: credentials)
@@ -155,7 +157,18 @@ extension VirtualTouristModel {
         getPhotosCancellable = URLSession.shared.dataTaskPublisher(for: request)
             .map { $0.data }
             .decode(type: Flickr.PhotosResponse.self, decoder: JSONDecoder())
-            // TODO implement flatmap here
+            .flatMap { $0.photos.photos.publisher }
+            .map({ (photo: Flickr.Photo) -> URL in
+                let size_suffix = "z"
+                let file = "\(photo.id)_\(photo.secret)_\(size_suffix).jpg"
+                let link = "https://live.staticflickr.com/\(photo.server)/\(file)"
+                return URL(string: link)!
+            })
+            .flatMap { (url:URL) in URLSession.shared.dataTaskPublisher(for: url).mapError { error -> URLError in return URLError(URLError.Code(rawValue: 404)) } }
+            .map { $0.data }
+            .map { UIImage(data: $0) }
+            .compactMap { $0 }
+            .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { result in
                     switch result {
@@ -166,8 +179,10 @@ extension VirtualTouristModel {
                         print("Finished \(#function) successfully")
                     }
                 },
-                receiveValue: {
-                    defaultLog.debug("\(String(describing: $0))")
+                receiveValue: { (image: UIImage) in
+                    // TODO add the image to CoreData
+                    onPhotoCompletion(image)
+//                    defaultLog.debug("\(String(describing: url))")
                 }
             )
     }

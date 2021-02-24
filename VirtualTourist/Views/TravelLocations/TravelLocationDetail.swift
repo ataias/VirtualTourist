@@ -10,10 +10,13 @@ import SwiftUI
 struct TravelLocationDetail: View {
     let location: TravelLocation
 
-    @State private var images: [UIImage]?
+    @State private var images: [UIImage] = []
 
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var model: VirtualTouristModel
+
+    var columns: [GridItem] =
+        Array(repeating: .init(.flexible()), count: 2)
 
     var body: some View {
         VStack(spacing: 10) {
@@ -25,9 +28,18 @@ struct TravelLocationDetail: View {
                 model.travelLocationModel.delete(location: location)
                 self.presentationMode.wrappedValue.dismiss()
             }
+            ScrollView {
+                LazyVGrid(columns: columns) {
+                    ForEach(images, id: \.self) {
+                        Image(uiImage: $0)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }
+                }.font(.largeTitle)
+            }
         }
         .onAppear {
-            if images == nil {
+            if images.count == 0 {
                 getPhotos()
             }
         }
@@ -35,7 +47,7 @@ struct TravelLocationDetail: View {
 
     func getPhotos() {
         model.photos(for: location) {
-            self.images = $0
+            self.images.append($0)
         }
     }
 }
