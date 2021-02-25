@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		42618F4625E7CB8F006EAEE9 /* RotatedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42618F4525E7CB8F006EAEE9 /* RotatedView.swift */; };
 		426835BC25E3043D00B9D888 /* Persistency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426835BB25E3043D00B9D888 /* Persistency.swift */; };
 		427511FF25D7E2A700C796B2 /* VirtualTouristApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427511FE25D7E2A700C796B2 /* VirtualTouristApp.swift */; };
 		4275120325D7E2A800C796B2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4275120225D7E2A800C796B2 /* Assets.xcassets */; };
@@ -41,6 +42,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		42618F4525E7CB8F006EAEE9 /* RotatedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatedView.swift; sourceTree = "<group>"; };
 		426835BB25E3043D00B9D888 /* Persistency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistency.swift; sourceTree = "<group>"; };
 		427511FB25D7E2A700C796B2 /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		427511FE25D7E2A700C796B2 /* VirtualTouristApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualTouristApp.swift; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 			isa = PBXGroup;
 			children = (
 				4275121B25D7EEE000C796B2 /* StyledButton.swift */,
+				42618F4525E7CB8F006EAEE9 /* RotatedView.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -317,6 +320,7 @@
 				42F15D7A25D98C2900E84B07 /* TravelLocation.swift in Sources */,
 				42EAEF7D25E1AAA600D29D06 /* FlickrRequest.swift in Sources */,
 				426835BC25E3043D00B9D888 /* Persistency.swift in Sources */,
+				42618F4625E7CB8F006EAEE9 /* RotatedView.swift in Sources */,
 				42F15D5525D91E9C00E84B07 /* VirtualTouristModel.swift in Sources */,
 				42F97D4E25DFC4EE00E06BD8 /* TravelLocationDetail.swift in Sources */,
 				427511FF25D7E2A700C796B2 /* VirtualTouristApp.swift in Sources */,

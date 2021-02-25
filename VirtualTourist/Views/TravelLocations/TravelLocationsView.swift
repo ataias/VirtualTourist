@@ -29,34 +29,36 @@ struct TravelLocationsView: View {
             )
         }
         .ignoresSafeArea()
-        .sheet(item: $selectedPlace) { place in
-            TravelLocationDetail(location: place)
-        }
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: {
-                    model.logout()
-                    self.presentationMode.wrappedValue.dismiss()
-                }) {
-                    Image(systemName: "arrow.left")
-                    Text("Logout")
+        .fullScreenCover(item: $selectedPlace) { place in
+            NavigationView {
+                TravelLocationDetail(location: place)
+            }
+            }
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        model.logout()
+                        self.presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "arrow.left")
+                        Text("Logout")
+                    }
+                    .padding(7)
+                    .background(Color.white.opacity(0.9).blur(radius: 3.0))
                 }
-                .padding(7)
-                .background(Color.white.opacity(0.9).blur(radius: 3.0))
+            }
+
+        }
+
+    }
+
+    struct TravelLocationsView_Previews: PreviewProvider {
+        static var previews: some View {
+            NavigationView {
+                TravelLocationsView()
+                    .add(model: VirtualTouristModel())
             }
         }
-
     }
-
-}
-
-struct TravelLocationsView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            TravelLocationsView()
-                .add(model: VirtualTouristModel())
-        }
-    }
-}
 

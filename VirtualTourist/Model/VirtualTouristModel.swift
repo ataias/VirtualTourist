@@ -185,8 +185,6 @@ extension VirtualTouristModel {
                 },
                 receiveValue: { (photo: Flickr.Photo, image: UIImage?) in
                     onPhotoCompletion(image!)
-                    print(photo)
-                    // TODO add the image to CoreData
                     let pinId = pin.objectID
                     Persistency.backgroundContext.perform {
                         let ctx = Persistency.backgroundContext!
