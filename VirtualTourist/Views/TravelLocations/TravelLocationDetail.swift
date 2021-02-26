@@ -35,13 +35,20 @@ struct TravelLocationDetail: View {
                 .overlay(locationControls, alignment: .topTrailing)
                 .frame(height: 200)
 
-                LazyVGrid(columns: columns) {
-                    ForEach(images, id: \.self) {
-                        Image(uiImage: $0)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
+                if isReloading {
+                    VStack {
+                        ProgressView()
                     }
-                }.font(.largeTitle)
+                    .padding()
+                } else {
+                    LazyVGrid(columns: columns) {
+                        ForEach(images, id: \.self) {
+                            Image(uiImage: $0)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        }
+                    }.font(.largeTitle)
+                }
             }
         }
         .onAppear {
@@ -75,7 +82,7 @@ struct TravelLocationDetail: View {
     @ViewBuilder
     var reloadControl: some View {
         Button(action: {
-            getPhotos()
+            downloadNewPhotos()
             withAnimation {
                 isReloading = true
             }
@@ -99,18 +106,21 @@ struct TravelLocationDetail: View {
 
 
     func getPhotos() {
-        model.photos(for: location) {
-            if let image = $0 {
-                self.images.append(image)
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                withAnimation {
-                    isReloading = false
-                }
-                defaultLog.debug("isReloading: unset")
+        model.getPhotos(for: location) {
+            self.images.append(contentsOf: $0)
+        }
+    }
+
+    func downloadNewPhotos() {
+        self.images = []
+        model.downloadPhotos(for: location) {
+            self.images.append(contentsOf: $0)
+            withAnimation {
+                isReloading = false
             }
         }
     }
+
 
     func mapAnnotation(location: TravelLocation) -> MapPin {
         MapPin(coordinate: location.coordinate)

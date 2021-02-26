@@ -139,20 +139,68 @@ extension VirtualTouristModel {
 
 // MARK: - Photos
 extension VirtualTouristModel {
-    func photos(for location: TravelLocation, onPhotoCompletion: @escaping (UIImage?) -> Void, onError: ((Error) -> Void)? = nil) {
+    // TODO write docs saying onPhotoCompletion may be called multiple times
+    func getPhotos(for location: TravelLocation, onPhotoCompletion: @escaping ([UIImage]) -> Void) {
+        guard let pin = travelLocationModel.fetchedResultsController.fetchedObjects!.first(where: { $0.id == location.id }) else {
+            defaultLog.debug("No pin available in store for given location: \(location)")
+            onPhotoCompletion([])
+            return
+        }
+        let pinId = pin.objectID
+        // TODO fetch photos from core data; background thread
+        Persistency.backgroundContext.perform {
+            let ctx = Persistency.backgroundContext!
+            let pin = ctx.object(with: pinId) as! Pin
+            let photos = pin.photos!
+
+            if photos.count == 0 {
+                self.downloadPhotos(for: location, onPhotoCompletion: onPhotoCompletion)
+            } else {
+                let images = photos.map { (photoWeak: Any) -> UIImage in
+                    let photo = photoWeak as! Photo
+                    let image = UIImage(data: photo.image!)
+                    return image!
+                }
+                DispatchQueue.main.async {
+                    onPhotoCompletion(images)
+                }
+                defaultLog.debug("Total images for \(location): \(images.count)")
+            }
+        }
+    }
+
+    /// Deletes previously saved photos from store and downloads new ones
+    func downloadPhotos(for location: TravelLocation, onPhotoCompletion: @escaping ([UIImage]) -> Void, onError: ((Error) -> Void)? = nil) {
 
         guard let flickrApi = flickrApi,
               let credentials = credentials
         else {
             defaultLog.warning("Skipping photo request; missing credentials")
-            onPhotoCompletion(nil)
+            onPhotoCompletion([])
             return
         }
 
         let pin = travelLocationModel.fetchedResultsController.fetchedObjects!.first { $0.id == location.id }!
+        let pinId = pin.objectID
+        pin.lastPage += 1
+        Persistency.saveContext()
 
-        // TODO select other pages here... depending if there are already photos or not
-        let request = Flickr.Requests.PhotoSearch(location: location, accuracy: nil, page: 1)
+        // Delete previous photos
+        Persistency.backgroundContext.perform {
+            let ctx = Persistency.backgroundContext!
+            let pin = ctx.object(with: pinId) as! Pin
+            let photos = pin.photos!
+            for photo in photos {
+                ctx.delete(photo as! Photo)
+            }
+            do {
+                try ctx.save()
+            } catch {
+                defaultLog.error("\(error as NSObject)")
+            }
+        }
+
+        let request = Flickr.Requests.PhotoSearch(location: location, accuracy: nil, page: Int(pin.lastPage))
             .urlRequest(flickrApi: flickrApi, credentials: credentials)
 
         getPhotosCancellable = URLSession.shared.dataTaskPublisher(for: request)
@@ -185,8 +233,7 @@ extension VirtualTouristModel {
                     }
                 },
                 receiveValue: { (photo: Flickr.Photo, image: UIImage?) in
-                    onPhotoCompletion(image!)
-                    let pinId = pin.objectID
+                    onPhotoCompletion([image!])
                     Persistency.backgroundContext.perform {
                         let ctx = Persistency.backgroundContext!
                         let pin = ctx.object(with: pinId) as! Pin
@@ -315,6 +362,10 @@ class TravelLocationsModel: NSObject, NSFetchedResultsControllerDelegate, Observ
             try fetchedResultsController.performFetch()
         } catch {
             fatalError("The fetch could not be executed: \(error.localizedDescription)")
+        }
+
+        _locations = fetchedResultsController.fetchedObjects!.map {
+            try! JSONDecoder().decode(TravelLocation.self, from: $0.travelLocation!)
         }
     }
 
