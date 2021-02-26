@@ -31,24 +31,10 @@ struct TravelLocationDetail: View {
                     annotationItems: [location],
                     annotationContent: mapAnnotation(location:)
                 )
-                .overlay(VStack {
-                    Button(action: {
-                        getPhotos()
-                        withAnimation {
-                            isReloading = true
-                        }
-                        defaultLog.debug("isReloading: set")
-
-                    }) {
-                        Image(systemName: "arrow.triangle.2.circlepath")
-                            .rotationEffect(Angle.degrees(isReloading ? 360 : 0))
-                    }
-
-                }
-                .background(Color.white.opacity(0.9).blur(radius: 3.0))
-                .padding(), alignment: .topTrailing)
+                .disabled(true)
+                .overlay(locationControls, alignment: .topTrailing)
                 .frame(height: 200)
-                Text("Hello, World!")
+
                 LazyVGrid(columns: columns) {
                     ForEach(images, id: \.self) {
                         Image(uiImage: $0)
@@ -67,18 +53,50 @@ struct TravelLocationDetail: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-
-
-
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Delete") {
-                    model.travelLocationModel.delete(location: location)
+                Button(action: {
                     self.presentationMode.wrappedValue.dismiss()
+                }) {
+                    Label("Back", systemImage: "chevron.left")
                 }
             }
         }
     }
+
+    @ViewBuilder
+    var locationControls: some View {
+        VStack(spacing: 10) {
+            reloadControl
+            deleteControl
+        }
+        .padding()
+        .background(Color.white.opacity(0.9).blur(radius: 3.0))
+    }
+
+    @ViewBuilder
+    var reloadControl: some View {
+        Button(action: {
+            getPhotos()
+            withAnimation {
+                isReloading = true
+            }
+            defaultLog.debug("isReloading: set")
+
+        }) {
+            Image(systemName: "arrow.triangle.2.circlepath")
+                .rotationEffect(Angle.degrees(isReloading ? 360 : 0))
+        }
+    }
+
+    @ViewBuilder
+    var deleteControl: some View {
+        Button(action: {
+            model.travelLocationModel.delete(location: location)
+            self.presentationMode.wrappedValue.dismiss()
+        }) {
+            Image(systemName: "trash")
+        }
+    }
+
 
     func getPhotos() {
         model.photos(for: location) {
@@ -91,8 +109,6 @@ struct TravelLocationDetail: View {
                 }
                 defaultLog.debug("isReloading: unset")
             }
-
-
         }
     }
 
