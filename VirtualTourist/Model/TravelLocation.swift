@@ -44,9 +44,9 @@ extension TravelLocation {
     }()
 
     // TODO add some to json
-//    static var sample: TravelLocation {
-//        sampleArray[0]
-//    }
+    //    static var sample: TravelLocation {
+    //        sampleArray[0]
+    //    }
     static var sample: TravelLocation {
         TravelLocation(id: UUID(), title: "Test Location", subtitle: "Sub Location", latitude: 2.5, longitude: 3.5)
     }
@@ -73,6 +73,17 @@ protocol Location: Identifiable, Hashable, CustomStringConvertible {
 extension Location {
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+
+    var coordinateRegion: MKCoordinateRegion {
+        MKCoordinateRegion(
+            center: self.coordinate,
+            span:
+                MKCoordinateSpan(
+                    latitudeDelta: 10,
+                    longitudeDelta: 15
+                )
+        )
     }
 }
 

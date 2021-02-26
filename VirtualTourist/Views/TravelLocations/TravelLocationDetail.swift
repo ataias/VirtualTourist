@@ -20,31 +20,34 @@ struct TravelLocationDetail: View {
     var columns: [GridItem] =
         Array(repeating: .init(.flexible()), count: 2)
 
-    private var coordinateRegion: MKCoordinateRegion {
-        MKCoordinateRegion(
-            center: location.coordinate,
-            span:
-                MKCoordinateSpan(
-                    latitudeDelta: 10,
-                    longitudeDelta: 15
-                )
-        )
-    }
-
     private var animation: Animation {
-        Animation.linear(duration: 3.0)
-            .repeatForever(autoreverses: false)
+        Animation.easeInOut
     }
 
     var body: some View {
         VStack(spacing: 10) {
             ScrollView {
-                Map(coordinateRegion: .constant(coordinateRegion),
+                Map(coordinateRegion: .constant(location.coordinateRegion),
                     annotationItems: [location],
                     annotationContent: mapAnnotation(location:)
                 )
+                .overlay(VStack {
+                    Button(action: {
+                        getPhotos()
+                        withAnimation {
+                            isReloading = true
+                        }
+                        defaultLog.debug("isReloading: set")
+
+                    }) {
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                            .rotationEffect(Angle.degrees(isReloading ? 360 : 0))
+                    }
+
+                }
+                .background(Color.white.opacity(0.9).blur(radius: 3.0))
+                .padding(), alignment: .topTrailing)
                 .frame(height: 200)
-                .disabled(true)
                 Text("Hello, World!")
                 LazyVGrid(columns: columns) {
                     ForEach(images, id: \.self) {
@@ -64,28 +67,7 @@ struct TravelLocationDetail: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: {
-                    getPhotos()
-                    withAnimation {
-                        isReloading = true
-                    }
-                    defaultLog.debug("isReloading: set")
-                    
-                }) {
-                    // TODO find out why animations don't work here...
-                    // For whatever reason if you add something other than "Image" you can see the rotation effect take place and also the background color
-                    // TODO I think I need to make that button become "Update" without animation and then I put the animation outside the toolbar items
-                    VStack {
-                        Image(systemName: "arrow.triangle.2.circlepath")
-                        Text("")
-                    }
-                    .background(Color.green)
-//                    .rotationEffect(Angle.degrees(60))
-                    .rotationEffect(Angle.degrees(isReloading ? 360 : 0))
-                    .animation(animation)
-//                    Text("Update")
 
-                }
 
 
             }
@@ -100,7 +82,9 @@ struct TravelLocationDetail: View {
 
     func getPhotos() {
         model.photos(for: location) {
-            self.images.append($0)
+            if let image = $0 {
+                self.images.append(image)
+            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 withAnimation {
                     isReloading = false

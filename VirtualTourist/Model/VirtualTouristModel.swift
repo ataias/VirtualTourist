@@ -139,12 +139,13 @@ extension VirtualTouristModel {
 
 // MARK: - Photos
 extension VirtualTouristModel {
-    func photos(for location: TravelLocation, onPhotoCompletion: @escaping (UIImage) -> Void, onError: ((Error) -> Void)? = nil) {
+    func photos(for location: TravelLocation, onPhotoCompletion: @escaping (UIImage?) -> Void, onError: ((Error) -> Void)? = nil) {
 
         guard let flickrApi = flickrApi,
               let credentials = credentials
         else {
             defaultLog.warning("Skipping photo request; missing credentials")
+            onPhotoCompletion(nil)
             return
         }
 
