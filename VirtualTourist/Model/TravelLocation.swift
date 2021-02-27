@@ -80,8 +80,8 @@ extension Location {
             center: self.coordinate,
             span:
                 MKCoordinateSpan(
-                    latitudeDelta: 10,
-                    longitudeDelta: 15
+                    latitudeDelta: 0.625,
+                    longitudeDelta: 0.8125
                 )
         )
     }

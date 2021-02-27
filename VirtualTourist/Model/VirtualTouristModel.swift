@@ -141,7 +141,7 @@ extension VirtualTouristModel {
 extension VirtualTouristModel {
     // TODO write docs saying onPhotoCompletion may be called multiple times
     func getPhotos(for location: TravelLocation, onPhotoCompletion: @escaping ([(Flickr.Photo, UIImage)]) -> Void) {
-        guard let pin = travelLocationModel.fetchedResultsController.fetchedObjects!.first(where: { $0.id == location.id }) else {
+        guard let pin = travelLocationModel.getPin(for: location) else {
             defaultLog.debug("No pin available in store for given location: \(location)")
             onPhotoCompletion([])
             return
@@ -156,7 +156,7 @@ extension VirtualTouristModel {
             if photos.count == 0 {
                 self.downloadPhotos(for: location, onPhotoCompletion: onPhotoCompletion)
             } else {
-                let images =
+                let dataImagePairs =
                     photos
                         .map { $0 as! Photo }
                         .sorted(by: { $0.id > $1.id })
@@ -165,9 +165,9 @@ extension VirtualTouristModel {
                             return (Flickr.Photo.convert(from: photo), image!)
                         }
                 DispatchQueue.main.async {
-                    onPhotoCompletion(images)
+                    onPhotoCompletion(dataImagePairs)
                 }
-                defaultLog.debug("Total images for \(location): \(images.count)")
+                defaultLog.debug("Total images for \(location): \(dataImagePairs.count)")
             }
         }
     }
@@ -175,6 +175,7 @@ extension VirtualTouristModel {
     /// Deletes previously saved photos from store and downloads new ones
     func downloadPhotos(for location: TravelLocation, onPhotoCompletion: @escaping ([(Flickr.Photo, UIImage)]) -> Void, onError: ((Error) -> Void)? = nil) {
 
+        // When running on xcode previews, we don't set those and want to skip photo requests
         guard let flickrApi = flickrApi,
               let credentials = credentials
         else {
@@ -183,21 +184,12 @@ extension VirtualTouristModel {
             return
         }
 
-        let pin = travelLocationModel.fetchedResultsController.fetchedObjects!.first { $0.id == location.id }!
+        let pin = travelLocationModel.getPin(for: location)!
         let pinId = pin.objectID
         pin.lastPage += 1
         Persistency.viewContext.trySave()
 
-        // Delete previous photos
-        let ctx = Persistency.backgroundContext!
-        ctx.perform {
-            let pin = ctx.object(with: pinId) as! Pin
-            let photos = pin.photos!
-            for photo in photos {
-                ctx.delete(photo as! Photo)
-            }
-            ctx.trySave()
-        }
+        deletePhotosFor(pinId: pinId)
 
         let request = Flickr.Requests.PhotoSearch(location: location, accuracy: nil, page: Int(pin.lastPage))
             .urlRequest(flickrApi: flickrApi, credentials: credentials)
@@ -221,13 +213,7 @@ extension VirtualTouristModel {
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { result in
-                    switch result {
-                    case .failure(let error):
-                        print("Error when running \(#function): \(error)")
-                        onError?(error)
-                    case .finished:
-                        print("Finished \(#function) successfully")
-                    }
+                    self.receiveCompletion(result: result, onError: onError)
                 },
                 receiveValue: { (photo: Flickr.Photo, image: UIImage?) in
                     onPhotoCompletion([(photo, image!)])
@@ -240,6 +226,30 @@ extension VirtualTouristModel {
                 }
             )
     }
+
+    fileprivate func receiveCompletion(result: Subscribers.Completion<Error>, onError: ((Error) -> Void)? = nil, caller: String = #function) {
+        switch result {
+        case .failure(let error):
+            print("Error when running \(caller): \(error)")
+            onError?(error)
+        case .finished:
+            print("Finished \(caller) successfully")
+        }
+    }
+
+    fileprivate func deletePhotosFor(pinId: NSManagedObjectID) {
+        // Delete previous photos
+        let ctx = Persistency.backgroundContext!
+        ctx.perform {
+            let pin = ctx.object(with: pinId) as! Pin
+            let photos = pin.photos!
+            for photo in photos {
+                ctx.delete(photo as! Photo)
+            }
+            ctx.trySave()
+        }
+    }
+
 }
 
 // MARK: - CryptoKit
@@ -390,13 +400,13 @@ class TravelLocationsModel: NSObject, NSFetchedResultsControllerDelegate, Observ
     /// - Complexity
     /// `O(n)`
     func delete(location: TravelLocation) {
-        let pin = fetchedResultsController.fetchedObjects!.first { $0.id! == location.id }!
+        let pin = getPin(for: location)!
         Persistency.viewContext.delete(pin)
         Persistency.viewContext.trySave()
     }
 
     func delete(photo: Flickr.Photo, from location: TravelLocation) {
-        let pin = fetchedResultsController.fetchedObjects!.first { $0.id! == location.id }!
+        let pin = getPin(for: location)!
         let pinId = pin.objectID
         let ctx = Persistency.backgroundContext!
         ctx.perform {
@@ -408,17 +418,12 @@ class TravelLocationsModel: NSObject, NSFetchedResultsControllerDelegate, Observ
 
     }
 
-    func edit(location: TravelLocation) {
-        fatalError("TODO")
-    }
-
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         switch type {
         case .insert:
             let pin = anObject as! Pin
             _locations.append(pin.unwrappedTravelLocation)
         case .delete:
-            // TODO need to validate this works!
             let pin = anObject as! Pin
             let location = pin.unwrappedTravelLocation
             let index = _locations.firstIndex(where: { location.id == $0.id })!
@@ -426,6 +431,10 @@ class TravelLocationsModel: NSObject, NSFetchedResultsControllerDelegate, Observ
         default:
             break
         }
+    }
+
+    func getPin(for location: TravelLocation) -> Pin? {
+        return fetchedResultsController.fetchedObjects!.first { $0.id! == location.id }
     }
 }
 
