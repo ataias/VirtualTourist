@@ -33,6 +33,14 @@ The login uses Flickr OAuth, so you will be taken to their website where you can
 
 image::assets/map.png[Map View, 200]
 
+== Features
+
+- You can drop pins anywhere on the map; a new pin is created on the chosen location
+- The album view downloads images from Flickr for the chosen location
+- You can delete pins and update all its images
+- You can see the image in more detail by single tapping on it
+- You can delete specific images from a location by double tapping on it
+
 == Work Notes
 
 === Authentication

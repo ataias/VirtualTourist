@@ -44,12 +44,14 @@ struct TravelLocationDetail: View {
                     LazyVGrid(columns: columns) {
                         ForEach(images, id: \.1.self) { (photo, uiImage) in
                             NavigationLink(
-                                // TODO fix here
                                 destination: ShareableImage(photo: photo, uiImage: uiImage, delete: {
                                     deletePhoto(photo: photo)
                                 }),
                                 label: {
                                     ImageView(uiImage: uiImage)
+                                        .onTapGesture(count: 2, perform: {
+                                            deletePhoto(photo: photo)
+                                        })
                                 })
                         }
                     }.font(.largeTitle)
