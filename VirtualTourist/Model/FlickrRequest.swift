@@ -127,5 +127,25 @@ extension Flickr {
             let link = "https://live.staticflickr.com/\(server)/\(file)"
             return URL(string: link)!
         }
+
+        static var sample: Flickr.Photo {
+            Photo(id: "123", owner: "owner", secret: "123", server: "123", farm: 123, title: "Title", isPublic: 1, isFriend: 0, isFamily: 0)
+        }
+    }
+}
+
+extension Flickr.Photo {
+    static func convert(from photo: Photo) -> Flickr.Photo {
+        return Flickr.Photo(
+            id: photo.id!,
+            owner: "",
+            secret: photo.secret!,
+            server: photo.server!,
+            farm: Int(photo.farm),
+            title: photo.title!,
+            isPublic: photo.isPublic ? 1 : 0,
+            isFriend: photo.isFriend ? 1 : 0,
+            isFamily: photo.isFamily ? 1 : 0
+        )
     }
 }

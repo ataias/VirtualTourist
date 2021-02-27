@@ -11,7 +11,7 @@ import MapKit
 struct TravelLocationDetail: View {
     let location: TravelLocation
 
-    @State private var images: [UIImage] = []
+    @State private var images: [(Flickr.Photo, UIImage)] = []
     @State private var isReloading = false
 
     @Environment(\.presentationMode) var presentationMode
@@ -42,11 +42,14 @@ struct TravelLocationDetail: View {
                     .padding()
                 } else {
                     LazyVGrid(columns: columns) {
-                        ForEach(images, id: \.self) { image in
+                        ForEach(images, id: \.1.self) { (photo, uiImage) in
                             NavigationLink(
-                                destination: ImageView(uiImage: image),
+                                // TODO fix here
+                                destination: ShareableImage(photo: photo, uiImage: uiImage, delete: {
+                                    deletePhoto(photo: photo)
+                                }),
                                 label: {
-                                    ImageView(uiImage: image)
+                                    ImageView(uiImage: uiImage)
                                 })
                         }
                     }.font(.largeTitle)
@@ -106,6 +109,10 @@ struct TravelLocationDetail: View {
         }
     }
 
+    func deletePhoto(photo: Flickr.Photo) {
+        model.travelLocationModel.delete(photo: photo, from: location)
+        images.removeAll { $0.0.id == photo.id }
+    }
 
     func getPhotos() {
         model.getPhotos(for: location) {

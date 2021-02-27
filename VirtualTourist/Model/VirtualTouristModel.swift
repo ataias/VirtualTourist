@@ -140,7 +140,7 @@ extension VirtualTouristModel {
 // MARK: - Photos
 extension VirtualTouristModel {
     // TODO write docs saying onPhotoCompletion may be called multiple times
-    func getPhotos(for location: TravelLocation, onPhotoCompletion: @escaping ([UIImage]) -> Void) {
+    func getPhotos(for location: TravelLocation, onPhotoCompletion: @escaping ([(Flickr.Photo, UIImage)]) -> Void) {
         guard let pin = travelLocationModel.fetchedResultsController.fetchedObjects!.first(where: { $0.id == location.id }) else {
             defaultLog.debug("No pin available in store for given location: \(location)")
             onPhotoCompletion([])
@@ -159,12 +159,10 @@ extension VirtualTouristModel {
                 let images =
                     photos
                         .map { $0 as! Photo }
-                        .sorted(by: {
-                            $0.id > $1.id
-                        })
-                        .map { (photo: Photo) -> UIImage in
+                        .sorted(by: { $0.id > $1.id })
+                        .map { (photo: Photo) -> (Flickr.Photo, UIImage) in
                             let image = UIImage(data: photo.image!)
-                            return image!
+                            return (Flickr.Photo.convert(from: photo), image!)
                         }
                 DispatchQueue.main.async {
                     onPhotoCompletion(images)
@@ -175,7 +173,7 @@ extension VirtualTouristModel {
     }
 
     /// Deletes previously saved photos from store and downloads new ones
-    func downloadPhotos(for location: TravelLocation, onPhotoCompletion: @escaping ([UIImage]) -> Void, onError: ((Error) -> Void)? = nil) {
+    func downloadPhotos(for location: TravelLocation, onPhotoCompletion: @escaping ([(Flickr.Photo, UIImage)]) -> Void, onError: ((Error) -> Void)? = nil) {
 
         guard let flickrApi = flickrApi,
               let credentials = credentials
@@ -236,7 +234,7 @@ extension VirtualTouristModel {
                     }
                 },
                 receiveValue: { (photo: Flickr.Photo, image: UIImage?) in
-                    onPhotoCompletion([image!])
+                    onPhotoCompletion([(photo, image!)])
                     Persistency.backgroundContext.perform {
                         let ctx = Persistency.backgroundContext!
                         let pin = ctx.object(with: pinId) as! Pin
@@ -403,6 +401,19 @@ class TravelLocationsModel: NSObject, NSFetchedResultsControllerDelegate, Observ
         let pin = fetchedResultsController.fetchedObjects!.first { $0.id! == location.id }!
         Persistency.viewContext.delete(pin)
         Persistency.saveContext()
+    }
+
+    func delete(photo: Flickr.Photo, from location: TravelLocation) {
+        let pin = fetchedResultsController.fetchedObjects!.first { $0.id! == location.id }!
+        let pinId = pin.objectID
+        let ctx = Persistency.backgroundContext!
+        ctx.perform {
+            let pin = ctx.object(with: pinId) as! Pin
+            let photoToDelete = pin.photos?.first(where: { ($0 as! Photo).id == photo.id }) as! Photo
+            ctx.delete(photoToDelete)
+            Persistency.save(ctx)
+        }
+
     }
 
     func edit(location: TravelLocation) {
