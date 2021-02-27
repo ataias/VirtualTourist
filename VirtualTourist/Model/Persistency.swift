@@ -38,28 +38,6 @@ class Persistency {
         backgroundContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
     }
 
-    static func saveContext() {
-        let context = persistentContainer.viewContext
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-            }
-        }
-    }
-
-    static func save(_ context: NSManagedObjectContext) {
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-            }
-        }
-    }
 }
 
 extension Photo {
@@ -76,5 +54,18 @@ extension Photo {
         self.title = photo.title
         self.pin = pin
 
+    }
+}
+
+extension NSManagedObjectContext {
+    func trySave() {
+        if self.hasChanges {
+            do {
+                try self.save()
+            } catch {
+                let nserror = error as NSError
+                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
+        }
     }
 }

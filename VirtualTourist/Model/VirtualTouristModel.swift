@@ -186,7 +186,7 @@ extension VirtualTouristModel {
         let pin = travelLocationModel.fetchedResultsController.fetchedObjects!.first { $0.id == location.id }!
         let pinId = pin.objectID
         pin.lastPage += 1
-        Persistency.saveContext()
+        Persistency.viewContext.trySave()
 
         // Delete previous photos
         Persistency.backgroundContext.perform {
@@ -371,12 +371,12 @@ class TravelLocationsModel: NSObject, NSFetchedResultsControllerDelegate, Observ
     }
 
     func add(location: TravelLocation) {
-        let pin = Pin(context: Persistency.persistentContainer.viewContext)
+        let pin = Pin(context: Persistency.viewContext)
         pin.id = location.id
         pin.travelLocation = location.encoded()
         pin.createdAt = Date()
         pin.updatedAt = Date()
-        Persistency.saveContext()
+        Persistency.viewContext.trySave()
     }
 
     /// Deletes a location from CoreData given the TravelLocation
@@ -400,7 +400,7 @@ class TravelLocationsModel: NSObject, NSFetchedResultsControllerDelegate, Observ
     func delete(location: TravelLocation) {
         let pin = fetchedResultsController.fetchedObjects!.first { $0.id! == location.id }!
         Persistency.viewContext.delete(pin)
-        Persistency.saveContext()
+        Persistency.viewContext.trySave()
     }
 
     func delete(photo: Flickr.Photo, from location: TravelLocation) {
@@ -411,20 +411,13 @@ class TravelLocationsModel: NSObject, NSFetchedResultsControllerDelegate, Observ
             let pin = ctx.object(with: pinId) as! Pin
             let photoToDelete = pin.photos?.first(where: { ($0 as! Photo).id == photo.id }) as! Photo
             ctx.delete(photoToDelete)
-            Persistency.save(ctx)
+            ctx.trySave()
         }
 
     }
 
     func edit(location: TravelLocation) {
         fatalError("TODO")
-    }
-
-    // MARK: NSFetchResultsControllerDelegate
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        // TODO this object is not necessary if we are talking simply about updates to the locations array
-        // however, it might be needed if we want to watch notifications in the "photos" array, which is not part of the travel location at the moment... should it be? if yes then we remove this later
-        objectWillChange.send()
     }
 
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
