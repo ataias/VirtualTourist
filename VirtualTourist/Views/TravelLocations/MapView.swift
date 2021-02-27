@@ -33,14 +33,14 @@ struct MapView: UIViewRepresentable {
     }
 
     private func updatePins(_ view: MKMapView, context: Context) {
-        let cmkAnnotations = view.annotations as! [CMKPointAnnotation]
+        let cmkAnnotations = view.annotations as! [PointAnnotation]
         let differences = travelLocationsModel.locations.difference(from: context.coordinator.previousLocations)
 
         for difference in differences {
             switch difference {
             case .insert(offset: _, element: let element, associatedWith: _):
                 // TODO add haptic feedback here
-                view.addAnnotation(CMKPointAnnotation(from: element))
+                view.addAnnotation(PointAnnotation(from: element))
             case .remove(offset: _, element: let element, associatedWith: _):
                 let annotation = cmkAnnotations.first { $0.id == element.id }
                 view.removeAnnotation(annotation!)
@@ -90,7 +90,7 @@ struct MapView: UIViewRepresentable {
         }
 
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-            guard let placemark = view.annotation as? CMKPointAnnotation else { return }
+            guard let placemark = view.annotation as? PointAnnotation else { return }
             parent.selectedPlace = placemark.convert()
         }
 
@@ -108,7 +108,7 @@ struct MapView: UIViewRepresentable {
             defaultLog.notice("Dropping pin on \(location)")
 
             // Only update the state binding, as this will trigger a view update which will actually add the annotation
-            let newLocation = CMKPointAnnotation()
+            let newLocation = PointAnnotation()
             newLocation.title = "Example title"
             newLocation.coordinate = location
 
@@ -129,40 +129,12 @@ extension CLLocationCoordinate2D: CustomStringConvertible {
 
 // MARK: - CMKPointAnnotation
 
-/// A Codable sub-class of MKPointAnnotation
-fileprivate class CMKPointAnnotation: MKPointAnnotation, Codable, Identifiable {
+/// An Identified sub-class of MKPointAnnotation
+fileprivate class PointAnnotation: MKPointAnnotation, Identifiable {
     var id = UUID()
-
-    enum CodingKeys: CodingKey {
-        case title
-        case subtitle
-        case latitude
-        case longitude
-    }
 
     override init() {
         super.init()
-    }
-
-    public required init(from decoder: Decoder) throws {
-        super.init()
-
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        title = try container.decode(String?.self, forKey: .title)
-        subtitle = try container.decode(String?.self, forKey: .subtitle)
-
-        let latitude = try container.decode(CLLocationDegrees.self, forKey: .latitude)
-        let longitude = try container.decode(CLLocationDegrees.self, forKey: .longitude)
-        coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(title, forKey: .title)
-        try container.encode(subtitle, forKey: .subtitle)
-        try container.encode(coordinate.latitude, forKey: .latitude)
-        try container.encode(coordinate.longitude, forKey: .longitude)
     }
 
     public init<T: Location>(from location: T) {

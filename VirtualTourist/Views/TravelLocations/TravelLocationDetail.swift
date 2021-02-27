@@ -50,7 +50,9 @@ struct TravelLocationDetail: View {
                                 label: {
                                     ImageView(uiImage: uiImage)
                                         .onTapGesture(count: 2, perform: {
-                                            deletePhoto(photo: photo)
+                                            withAnimation {
+                                                deletePhoto(photo: photo)
+                                            }
                                         })
                                 })
                         }
