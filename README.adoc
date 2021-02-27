@@ -38,6 +38,29 @@ image::assets/map.png[Map View, 200]
 === Authentication
 This app does not really need authentication to work with the Flickr API. However, initially I found the endpoint https://www.flickr.com/services/api/flickr.photos.geo.photosForLocation.html[flickr.photos.geo.photosForLocation] and only after I got it working with authentication and all the Flickr API signing requirements that I noticed it worked only for the images of the authenticated Flickr user. The actual endpoint now used is https://www.flickr.com/services/api/flickr.photos.search.html[flickr.photos.search] which does not require authentication for public photos.
 
+=== Decoupling Core Data
+
+Core Data automatically created classes are not what I prefer to work with. I need to keep unwrapping things, dealing with NSSet and casting results with `as! Pin` or `as! Photo`. I thought "I could decouple that, dealing with CoreData in some key classes and the rest of my codebase will only use strongly typed structs I define". That thought kind of worked, but I have some issues:
+
+==== Deletion
+How to delete efficiently when you don't have the object? Structs in the codebase contain an id that is available in the respective core data model. I wish I had an efficient way of deleting it with that id, like in SQL:
+
+[source,sql]
+----
+delete from Pin
+where id = 'SOME-ID';
+----
+
+Maybe I am too bad at googling with CoreData, but I couldn't find how. My solution ended up fetching the Pin objects, then in memory picking the one I want to delete, and then using that for deleting from the context. This approach is `O(n)`, so definitely not ideal.
+
+==== Transformable
+
+Can I use transformable instead of data for codable? I didn't invest much time researching this and I couldn't find it quickly. I also didn't do it for the UIImage data; this would be a nice next step.
+
+==== Should I bother about decoupling Core Data?
+
+That's what I wonder given the issues above. Have you had this problem? Want to talk or have a link/book for me to read? I would love to hear from you.
+
 == License
 
 See link:LICENSE[LICENSE]
