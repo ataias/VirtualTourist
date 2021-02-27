@@ -3,7 +3,7 @@
     <entity name="Photo" representedClassName="Photo" syncable="YES" codeGenerationType="class">
         <attribute name="farm" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="String"/>
-        <attribute name="image" optional="YES" attributeType="Binary"/>
+        <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
         <attribute name="isFamily" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="isFriend" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="isPublic" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
@@ -23,7 +23,7 @@
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Photo" inverseName="pin" inverseEntity="Photo"/>
     </entity>
     <elements>
-        <element name="Photo" positionX="-286.95703125" positionY="54.99609375" width="128" height="193"/>
+        <element name="Photo" positionX="-286.95703125" positionY="54.99609375" width="128" height="179"/>
         <element name="Pin" positionX="-613.42578125" positionY="38.70703125" width="128" height="149"/>
     </elements>
 </model>
