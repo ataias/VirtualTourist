@@ -98,7 +98,7 @@ extension Flickr {
         }
     }
 
-    struct Photo: Codable {
+    struct Photo: Codable, Identifiable, Hashable {
         let id: String
         let owner: String
         let secret: String
@@ -131,6 +131,17 @@ extension Flickr {
         static var sample: Flickr.Photo {
             Photo(id: "123", owner: "owner", secret: "123", server: "123", farm: 123, title: "Title", isPublic: 1, isFriend: 0, isFamily: 0)
         }
+    }
+
+    enum PhotoUpdate {
+        /// Basic info about a photo whose data we don't have yet
+        case downloading(Flickr.Photo)
+
+        /// Update that indicates the data for the image was downloaded
+        case downloaded(Flickr.Photo, UIImage)
+
+        /// Full info about an image; this is not an update about a download, simply giving all the info in one go
+        case full(Flickr.Photo, UIImage)
     }
 }
 

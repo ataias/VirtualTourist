@@ -11,7 +11,7 @@ import MapKit
 struct TravelLocationDetail: View {
     let location: TravelLocation
 
-    @State private var images: [(Flickr.Photo, UIImage)] = []
+    @State private var images: [(Flickr.Photo, UIImage?)] = []
     @State private var isReloading = false
 
     @Environment(\.presentationMode) var presentationMode
@@ -42,19 +42,25 @@ struct TravelLocationDetail: View {
                     .padding()
                 } else {
                     LazyVGrid(columns: columns) {
-                        ForEach(images, id: \.1.self) { (photo, uiImage) in
-                            NavigationLink(
-                                destination: ImageDetail(photo: photo, uiImage: uiImage, delete: {
-                                    deletePhoto(photo: photo)
-                                }),
-                                label: {
-                                    ImageView(uiImage: uiImage)
-                                        .onTapGesture(count: 2, perform: {
-                                            withAnimation {
-                                                deletePhoto(photo: photo)
-                                            }
-                                        })
-                                })
+                        ForEach(images, id: \.0) { (photo, uiImage) in
+                            if let uiImage = uiImage {
+                                NavigationLink(
+                                    destination: ImageDetail(photo: photo, uiImage: uiImage, delete: {
+                                        deletePhoto(photo: photo)
+                                    }),
+                                    label: {
+                                        ImageView(uiImage: uiImage)
+                                            .onTapGesture(count: 2, perform: {
+                                                withAnimation {
+                                                    deletePhoto(photo: photo)
+                                                }
+                                            })
+                                    })
+                            } else {
+                                ProgressView()
+                                    .frame(width: 200, height: 200)
+                                    .background(Color.yellow)
+                            }
                         }
                     }.font(.largeTitle)
                 }
@@ -119,19 +125,32 @@ struct TravelLocationDetail: View {
     }
 
     func getPhotos() {
-        model.getPhotos(for: location) {
-            self.images.append(contentsOf: $0)
-        }
+        model.getPhotos(for: location, onPhotoUpdate: process(updates:))
     }
 
     func downloadNewPhotos() {
         self.images = []
         model.downloadPhotos(for: location) {
-            self.images.append(contentsOf: $0)
+            process(updates: $0)
             withAnimation {
                 isReloading = false
             }
         }
+    }
+
+    func process(updates: [Flickr.PhotoUpdate]) {
+        for update in updates {
+            switch update {
+            case .downloading(let photo):
+                self.images.append((photo, nil))
+            case .downloaded(let photo, let image):
+                let index = self.images.firstIndex(where: { $0.0.id == photo.id })!
+                self.images[index] = (photo, image)
+            case .full(let photo, let image):
+                self.images.append((photo, image))
+            }
+        }
+
     }
 
 

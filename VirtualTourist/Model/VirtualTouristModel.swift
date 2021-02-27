@@ -139,33 +139,32 @@ extension VirtualTouristModel {
 
 // MARK: - Photos
 extension VirtualTouristModel {
-    // TODO write docs saying onPhotoCompletion may be called multiple times
-    func getPhotos(for location: TravelLocation, onPhotoCompletion: @escaping ([(Flickr.Photo, UIImage)]) -> Void) {
+    func getPhotos(for location: TravelLocation, onPhotoUpdate: @escaping ([Flickr.PhotoUpdate]) -> Void) {
         guard let pin = travelLocationModel.getPin(for: location) else {
             defaultLog.debug("No pin available in store for given location: \(location)")
-            onPhotoCompletion([])
+            onPhotoUpdate([])
             return
         }
         let pinId = pin.objectID
-        
+
         let ctx = Persistency.backgroundContext!
         ctx.perform {
             let pin = ctx.object(with: pinId) as! Pin
             let photos = pin.photos!
 
             if photos.count == 0 {
-                self.downloadPhotos(for: location, onPhotoCompletion: onPhotoCompletion)
+                self.downloadPhotos(for: location, onPhotoUpdate: onPhotoUpdate)
             } else {
                 let dataImagePairs =
                     photos
                         .map { $0 as! Photo }
                         .sorted(by: { $0.id > $1.id })
-                        .map { (photo: Photo) -> (Flickr.Photo, UIImage) in
+                        .map { (photo: Photo) -> Flickr.PhotoUpdate in
                             let image = UIImage(data: photo.image!)
-                            return (Flickr.Photo.convert(from: photo), image!)
+                            return .full(Flickr.Photo.convert(from: photo), image!)
                         }
                 DispatchQueue.main.async {
-                    onPhotoCompletion(dataImagePairs)
+                    onPhotoUpdate(dataImagePairs)
                 }
                 defaultLog.debug("Total images for \(location): \(dataImagePairs.count)")
             }
@@ -173,14 +172,14 @@ extension VirtualTouristModel {
     }
 
     /// Deletes previously saved photos from store and downloads new ones
-    func downloadPhotos(for location: TravelLocation, onPhotoCompletion: @escaping ([(Flickr.Photo, UIImage)]) -> Void, onError: ((Error) -> Void)? = nil) {
+    func downloadPhotos(for location: TravelLocation, onPhotoUpdate: @escaping ([Flickr.PhotoUpdate]) -> Void, onError: ((Error) -> Void)? = nil) {
 
         // When running on xcode previews, we don't set those and want to skip photo requests
         guard let flickrApi = flickrApi,
               let credentials = credentials
         else {
             defaultLog.warning("Skipping photo request; missing credentials")
-            onPhotoCompletion([])
+            onPhotoUpdate([])
             return
         }
 
@@ -197,6 +196,11 @@ extension VirtualTouristModel {
         getPhotosCancellable = URLSession.shared.dataTaskPublisher(for: request)
             .map { $0.data }
             .decode(type: Flickr.PhotosResponse.self, decoder: JSONDecoder())
+            .map { (photoResponse: Flickr.PhotosResponse) -> Flickr.PhotosResponse in
+                let photoPairs = photoResponse.photos.photos.map { (p: Flickr.Photo) -> Flickr.PhotoUpdate in .downloading(p) }
+                onPhotoUpdate(photoPairs)
+                return photoResponse
+            }
             .flatMap { $0.photos.photos.publisher }
             .flatMap { (photo:Flickr.Photo) in
                 URLSession
@@ -216,7 +220,7 @@ extension VirtualTouristModel {
                     self.receiveCompletion(result: result, onError: onError)
                 },
                 receiveValue: { (photo: Flickr.Photo, image: UIImage?) in
-                    onPhotoCompletion([(photo, image!)])
+                    onPhotoUpdate([.downloaded(photo, image!)])
                     let ctx = Persistency.backgroundContext!
                     ctx.perform {
                         let pin = ctx.object(with: pinId) as! Pin
