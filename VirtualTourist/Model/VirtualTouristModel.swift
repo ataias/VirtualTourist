@@ -147,9 +147,9 @@ extension VirtualTouristModel {
             return
         }
         let pinId = pin.objectID
-        // TODO fetch photos from core data; background thread
-        Persistency.backgroundContext.perform {
-            let ctx = Persistency.backgroundContext!
+        
+        let ctx = Persistency.backgroundContext!
+        ctx.perform {
             let pin = ctx.object(with: pinId) as! Pin
             let photos = pin.photos!
 
@@ -189,18 +189,14 @@ extension VirtualTouristModel {
         Persistency.viewContext.trySave()
 
         // Delete previous photos
-        Persistency.backgroundContext.perform {
-            let ctx = Persistency.backgroundContext!
+        let ctx = Persistency.backgroundContext!
+        ctx.perform {
             let pin = ctx.object(with: pinId) as! Pin
             let photos = pin.photos!
             for photo in photos {
                 ctx.delete(photo as! Photo)
             }
-            do {
-                try ctx.save()
-            } catch {
-                defaultLog.error("\(error as NSObject)")
-            }
+            ctx.trySave()
         }
 
         let request = Flickr.Requests.PhotoSearch(location: location, accuracy: nil, page: Int(pin.lastPage))
@@ -235,15 +231,11 @@ extension VirtualTouristModel {
                 },
                 receiveValue: { (photo: Flickr.Photo, image: UIImage?) in
                     onPhotoCompletion([(photo, image!)])
-                    Persistency.backgroundContext.perform {
-                        let ctx = Persistency.backgroundContext!
+                    let ctx = Persistency.backgroundContext!
+                    ctx.perform {
                         let pin = ctx.object(with: pinId) as! Pin
                         let _ = Photo(context: ctx, photo: photo, image: image!, pin: pin)
-                        do {
-                            try ctx.save()
-                        } catch {
-                            defaultLog.error("\(error as NSObject)")
-                        }
+                        ctx.trySave()
                     }
                 }
             )
