@@ -80,8 +80,6 @@ struct MapView: UIViewRepresentable {
 
             if annotationView == nil {
                 annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-                annotationView?.canShowCallout = true
-                annotationView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
             } else {
                 annotationView?.annotation = annotation
             }
@@ -91,9 +89,8 @@ struct MapView: UIViewRepresentable {
             return annotationView
         }
 
-        func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
             guard let placemark = view.annotation as? CMKPointAnnotation else { return }
-
             parent.selectedPlace = placemark.convert()
         }
 
