@@ -44,7 +44,7 @@ struct TravelLocationDetail: View {
                     LazyVGrid(columns: columns) {
                         ForEach(images, id: \.1.self) { (photo, uiImage) in
                             NavigationLink(
-                                destination: ShareableImage(photo: photo, uiImage: uiImage, delete: {
+                                destination: ImageDetail(photo: photo, uiImage: uiImage, delete: {
                                     deletePhoto(photo: photo)
                                 }),
                                 label: {

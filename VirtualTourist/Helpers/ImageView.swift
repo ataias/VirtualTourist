@@ -18,7 +18,7 @@ struct ImageView: View {
 }
 
 // TODO I was thinking of allowing sharing of the images
-struct ShareableImage: View {
+struct ImageDetail: View {
     let photo: Flickr.Photo
     let uiImage: UIImage
     let delete: () -> Void
@@ -43,7 +43,7 @@ struct ImageView_Previews: PreviewProvider {
 
     static var previews: some View {
         NavigationView {
-            ShareableImage(photo: Flickr.Photo.sample, uiImage: image, delete: {})
+            ImageDetail(photo: Flickr.Photo.sample, uiImage: image, delete: {})
         }
     }
 }

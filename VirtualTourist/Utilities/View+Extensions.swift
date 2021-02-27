@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreHaptics
 
 struct ConditionalHide: ViewModifier {
     var hidden: Bool
@@ -43,3 +44,11 @@ extension View {
     }
 }
 
+// MARK: - Haptics
+extension View {
+    /// Generates simple success haptic feedback
+    func simpleHapticSuccess() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+    }
+}

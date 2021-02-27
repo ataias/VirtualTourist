@@ -20,10 +20,10 @@ struct MapView: UIViewRepresentable {
     @ObservedObject var travelLocationsModel: TravelLocationsModel
 
     func makeUIView(context: Context) -> MKMapView {
+
         let mapView = MKMapView()
         mapView.region = region
         mapView.delegate = context.coordinator
-        // TODO should the pins be initialized here?
         return mapView
     }
 
@@ -39,8 +39,8 @@ struct MapView: UIViewRepresentable {
         for difference in differences {
             switch difference {
             case .insert(offset: _, element: let element, associatedWith: _):
-                // TODO add haptic feedback here
                 view.addAnnotation(PointAnnotation(from: element))
+                simpleHapticSuccess()
             case .remove(offset: _, element: let element, associatedWith: _):
                 let annotation = cmkAnnotations.first { $0.id == element.id }
                 view.removeAnnotation(annotation!)
@@ -92,6 +92,7 @@ struct MapView: UIViewRepresentable {
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
             guard let placemark = view.annotation as? PointAnnotation else { return }
             parent.selectedPlace = placemark.convert()
+            parent.simpleHapticSuccess()
         }
 
         // MARK: - Auxiliary Methods
