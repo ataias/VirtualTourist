@@ -99,7 +99,6 @@ extension Flickr {
     }
 
     struct Photo: Codable {
-        // MARK: Flickr Properties
         let id: String
         let owner: String
         let secret: String
@@ -109,10 +108,6 @@ extension Flickr {
         let isPublic: Int
         let isFriend: Int
         let isFamily: Int
-
-//        // MARK: - Extended Properties
-        var image: Data?
-//        let url: URL?
 
         enum CodingKeys: String, CodingKey {
             case id
@@ -124,8 +119,6 @@ extension Flickr {
             case isPublic = "ispublic"
             case isFriend = "isfriend"
             case isFamily = "isfamily"
-//            case image
-//            case url
         }
 
         var url: URL {

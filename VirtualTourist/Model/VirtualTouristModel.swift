@@ -156,11 +156,16 @@ extension VirtualTouristModel {
             if photos.count == 0 {
                 self.downloadPhotos(for: location, onPhotoCompletion: onPhotoCompletion)
             } else {
-                let images = photos.map { (photoWeak: Any) -> UIImage in
-                    let photo = photoWeak as! Photo
-                    let image = UIImage(data: photo.image!)
-                    return image!
-                }
+                let images =
+                    photos
+                        .map { $0 as! Photo }
+                        .sorted(by: {
+                            $0.id > $1.id
+                        })
+                        .map { (photo: Photo) -> UIImage in
+                            let image = UIImage(data: photo.image!)
+                            return image!
+                        }
                 DispatchQueue.main.async {
                     onPhotoCompletion(images)
                 }
@@ -215,12 +220,10 @@ extension VirtualTouristModel {
                             return URLError(URLError.Code(rawValue: 404))
                         }
                     .map {
-                        var photo = photo
-                        photo.image = $0.data
-                        return photo
+                        return (photo, $0.data)
                     }
             }
-            .map { ($0, UIImage(data: $0.image!)) }
+            .map { ($0, UIImage(data: $1)) }
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { result in

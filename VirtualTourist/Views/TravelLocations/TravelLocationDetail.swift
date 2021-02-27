@@ -42,10 +42,12 @@ struct TravelLocationDetail: View {
                     .padding()
                 } else {
                     LazyVGrid(columns: columns) {
-                        ForEach(images, id: \.self) {
-                            Image(uiImage: $0)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
+                        ForEach(images, id: \.self) { image in
+                            NavigationLink(
+                                destination: ImageView(uiImage: image),
+                                label: {
+                                    ImageView(uiImage: image)
+                                })
                         }
                     }.font(.largeTitle)
                 }

@@ -56,7 +56,7 @@ extension Photo {
         self.init(context: context)
         self.id = photo.id
         self.farm = Int64(photo.farm)
-        self.image = photo.image!
+        self.image = image.pngData()
         self.isFamily = photo.isFamily != 0
         self.isFriend = photo.isFriend != 0
         self.isPublic = photo.isPublic != 0
